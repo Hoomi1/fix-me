@@ -8,14 +8,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>router</artifactId>
+    <artifactId>utils</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>ft.school21.fix-me</groupId>
-            <artifactId>utils</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
 </project>

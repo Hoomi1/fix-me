@@ -12,7 +12,7 @@ public class Server implements Runnable {
 
     public static final int MARKET = 5001;
     public static final int BROKER = 5000;
-    private final int portServer;
+    private int portServer;
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
@@ -32,7 +32,7 @@ public class Server implements Runnable {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        socketChannel.pipeline().addLast(new ServerHandler());
+                        socketChannel.pipeline().addLast(new ServerHandler(portServer));
                     }
                 });
 
