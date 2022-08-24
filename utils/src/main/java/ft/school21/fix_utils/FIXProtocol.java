@@ -6,9 +6,10 @@ public class FIXProtocol {
 
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyyyy-HH:mm:ss");
     private long messageId;
+    private String messageType;
 
 
-    public FIXProtocol() {
+    public FIXProtocol(long messageId, String messageType) {
     }
 
     public long getMessageId() {
