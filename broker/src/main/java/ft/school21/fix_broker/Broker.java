@@ -1,6 +1,7 @@
 package ft.school21.fix_broker;
 
 import ft.school21.fix_router.server.Server;
+import ft.school21.fix_utils.ConnectEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -10,15 +11,17 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 
 public class Broker implements Runnable {
 
-	private String clientName;
 	private EventLoopGroup workerGroup;
 	private final String HOST = "127.0.0.1";
 
-	public Broker(String clientName) {
-		this.clientName = clientName;
+	public Broker() {
 	}
 
 	@Override
@@ -34,7 +37,8 @@ public class Broker implements Runnable {
 
 						@Override
 						protected void initChannel(SocketChannel socketChannel) throws Exception {
-							socketChannel.pipeline().addLast(new BrokerHandler());
+							socketChannel.pipeline().addLast(new ConnectEncoder(),
+									new BrokerHandler());
 						}
 					}).option(ChannelOption.SO_KEEPALIVE, true);
 
@@ -46,5 +50,23 @@ public class Broker implements Runnable {
 			workerGroup.shutdownGracefully();
 		}
 
+	}
+
+	public static void writeCommand(Broker broker)
+	{
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println("PERERJEIR");
+		while (true) {
+			String strCommand = null;
+			try {
+				strCommand = bufferedReader.readLine();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			if (strCommand.equals("exit")) {
+				broker.workerGroup.shutdownGracefully();
+				break;
+			}
+		}
 	}
 }
