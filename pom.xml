@@ -10,7 +10,8 @@
 		<module>router</module>
 		<module>utils</module>
 		<module>broker</module>
-	</modules>
+        <module>market</module>
+    </modules>
 	<!--	<modules>-->
 <!--		<module></module>-->
 <!--	</modules>-->

@@ -25,9 +25,7 @@ public class AllDecoder extends ReplayingDecoder<Object> {
 			ConnectDone connectDone = new ConnectDone();
 			connectDone.setMessageType(protocol.getMessageType());
 			connectDone.setId(byteBuf.readInt());
-			System.out.println(connectDone.getId());
 			connectDone.setChecksum(byteBuf.readCharSequence(byteBuf.readInt(), charset).toString());
-			System.out.println(connectDone.getChecksum());
 			list.add(connectDone);
 		}
 

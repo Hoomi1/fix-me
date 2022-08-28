@@ -1,5 +1,6 @@
 package ft.school21.fix_router.server;
 
+import ft.school21.fix_utils.Messages.BuyOrSell;
 import ft.school21.fix_utils.Messages.ConnectDone;
 import ft.school21.fix_utils.Messages.FIXProtocol;
 import ft.school21.fix_utils.MessagesEnum.Message;
@@ -7,9 +8,13 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     private int portServer;
+    private HashMap<Integer, ChannelHandlerContext> hashMap  = new HashMap<>();
 
     public ServerHandler(int portServer) {
         this.portServer = portServer;
@@ -28,18 +33,22 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 //        super.channelRead(ctx, msg);
-        ByteBuf byteBuffer = (ByteBuf) msg;
-
-        System.out.println((char) byteBuffer.readByte());
         FIXProtocol fixMsg = (FIXProtocol) msg;
+
 
 //        if (fixMsg.getMessageId() == 0)
 //            fixMsg.setMessageId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
-        System.out.println("QWEQE" + "\r\n" + fixMsg.getMessageType());
         if (fixMsg.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
             ConnectDone connectDone = (ConnectDone) msg;
-            connectDone.setId( portServer + 2);
-            System.out.println(connectDone.getId());
+            connectDone.setId(parsNewId());
+            connectDone.tagCheckSum();
+            ctx.writeAndFlush(connectDone);
+            hashMap.put(connectDone.getId(), ctx);
+        }
+        else if (fixMsg.getMessageType().equals(Message.BUY_MESSAGE.toString()) ||
+                fixMsg.getMessageType().equals(Message.SELL_MESSAGE.toString()))
+        {
+            BuyOrSell buyOrSell = (BuyOrSell) msg;
         }
     }
 
@@ -48,5 +57,17 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 //        super.exceptionCaught(ctx, cause);
         System.out.println("EXCEPTION 2");
         System.out.println(cause.getMessage());
+    }
+
+    public int parsNewId() {
+        long lID = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+        String str = String.valueOf(lID);
+        String str1 = str.substring(0, 4);
+        String strId = null;
+        if (portServer == Server.MARKET)
+            strId = str1.concat("01");
+        else
+            strId = str1.concat("00");
+        return Integer.parseInt(strId);
     }
 }

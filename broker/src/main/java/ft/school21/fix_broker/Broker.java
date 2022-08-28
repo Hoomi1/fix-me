@@ -1,5 +1,6 @@
 package ft.school21.fix_broker;
 
+import ft.school21.fix_market.CryptoMarket;
 import ft.school21.fix_router.server.Server;
 import ft.school21.fix_utils.Decoder.AllDecoder;
 import ft.school21.fix_utils.Encoder.ConnectEncoder;
@@ -21,8 +22,10 @@ public class Broker implements Runnable {
 
 	private EventLoopGroup workerGroup;
 	private final String HOST = "localhost";
-
+	public static CryptoMarket cryptoMarket;
 	public Broker() {
+		cryptoMarket = new CryptoMarket();
+
 	}
 
 	@Override

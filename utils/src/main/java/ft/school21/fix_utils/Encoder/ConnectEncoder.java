@@ -21,7 +21,7 @@ public class ConnectEncoder extends MessageToByteEncoder<ConnectDone> {
             System.out.println(connectDone.getChecksumLength());
             System.out.println(connectDone.getChecksum());
 
-            byteBuf.writeInt(connectDone.getId());
+            byteBuf.writeInt((int) connectDone.getId());
             byteBuf.writeInt(connectDone.getChecksumLength());
             byteBuf.writeCharSequence(connectDone.getChecksum(), StandardCharsets.UTF_8);
         }
