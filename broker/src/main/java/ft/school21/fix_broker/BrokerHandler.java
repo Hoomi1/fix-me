@@ -1,9 +1,9 @@
 package ft.school21.fix_broker;
 
-import ft.school21.fix_utils.BuyOrSell;
-import ft.school21.fix_utils.ConnectDone;
-import ft.school21.fix_utils.FIXProtocol;
-import ft.school21.fix_utils.Message;
+import ft.school21.fix_utils.Messages.BuyOrSell;
+import ft.school21.fix_utils.Messages.ConnectDone;
+import ft.school21.fix_utils.Messages.FIXProtocol;
+import ft.school21.fix_utils.MessagesEnum.Message;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -15,18 +15,18 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("Broker is connecting");
-        ConnectDone connectDone = new ConnectDone(0, Message.ACCEPT_MESSAGE.toString());
 //        super.channelActive(ctx);
-        System.out.println(ctx.channel().remoteAddress().toString().substring(11));
+        System.out.println("Broker is connecting");
+        ConnectDone connectDone = new ConnectDone(0, 0, Message.ACCEPT_MESSAGE.toString());
+//        System.out.println(ctx.channel().remoteAddress().toString().substring(11));
         ctx.writeAndFlush(connectDone);
-
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 //        super.channelRead(ctx, msg);
         FIXProtocol protocol = (FIXProtocol) msg;
+
 
         if (protocol.getMessageType().equals(Message.ACCEPT_MESSAGE.toString()))
         {
@@ -42,7 +42,7 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-//        super.exceptionCaught(ctx, cause);
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("COMPLETE");
     }
 }

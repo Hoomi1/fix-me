@@ -1,7 +1,8 @@
 package ft.school21.fix_broker;
 
 import ft.school21.fix_router.server.Server;
-import ft.school21.fix_utils.ConnectEncoder;
+import ft.school21.fix_utils.Decoder.AllDecoder;
+import ft.school21.fix_utils.Encoder.ConnectEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -19,7 +20,7 @@ import java.io.InputStreamReader;
 public class Broker implements Runnable {
 
 	private EventLoopGroup workerGroup;
-	private final String HOST = "127.0.0.1";
+	private final String HOST = "localhost";
 
 	public Broker() {
 	}
@@ -37,7 +38,9 @@ public class Broker implements Runnable {
 
 						@Override
 						protected void initChannel(SocketChannel socketChannel) throws Exception {
-							socketChannel.pipeline().addLast(new ConnectEncoder(),
+							socketChannel.pipeline().addLast(
+									new AllDecoder(),
+									new ConnectEncoder(),
 									new BrokerHandler());
 						}
 					}).option(ChannelOption.SO_KEEPALIVE, true);

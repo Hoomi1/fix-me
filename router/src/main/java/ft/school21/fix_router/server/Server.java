@@ -1,6 +1,7 @@
 package ft.school21.fix_router.server;
 
-import ft.school21.fix_utils.ConnectEncoder;
+import ft.school21.fix_utils.Decoder.AllDecoder;
+import ft.school21.fix_utils.Encoder.ConnectEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -25,7 +26,7 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
-        bossGroup = new NioEventLoopGroup(1);
+        bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
         try {
         ServerBootstrap serverBootstrap = new ServerBootstrap();
@@ -34,7 +35,9 @@ public class Server implements Runnable {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        socketChannel.pipeline().addLast(new ConnectEncoder(),
+                        socketChannel.pipeline().addLast(
+                                new AllDecoder(),
+                                new ConnectEncoder(),
                                 new ServerHandler(portServer));
                     }
                 }).option(ChannelOption.SO_BACKLOG, 128)
