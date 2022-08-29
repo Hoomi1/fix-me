@@ -39,9 +39,9 @@ public class FIXProtocol {
         return messageTypeLength;
     }
 
-//    public void setTypeLength(int messageTypeLength) {
-//        this.messageTypeLength = messageTypeLength;
-//    }
+    public void setTypeLength(int messageTypeLength) {
+        this.messageTypeLength = messageTypeLength;
+    }
 
     public long getMarketId() {
         return marketId;
@@ -55,9 +55,9 @@ public class FIXProtocol {
         return checksumLength;
     }
 
-//    public void setChecksumLength(int checksumLength) {
-//        this.checksumLength = checksumLength;
-//    }
+    public void setChecksumLength(int checksumLength) {
+        this.checksumLength = checksumLength;
+    }
 
     public String getChecksum() {
         return checksum;
@@ -67,6 +67,7 @@ public class FIXProtocol {
         this.checksum = checksum;
         this.checksumLength = checksum.length();
     }
+
 
     public String HashObjectMD5(String id)
     {

@@ -4,6 +4,7 @@ import ft.school21.fix_market.CryptoMarket;
 import ft.school21.fix_utils.Messages.BuyOrSell;
 import ft.school21.fix_utils.Messages.ConnectDone;
 import ft.school21.fix_utils.Messages.FIXProtocol;
+import ft.school21.fix_utils.MessagesEnum.ActionMessages;
 import ft.school21.fix_utils.MessagesEnum.Message;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -16,130 +17,165 @@ import static ft.school21.fix_broker.Broker.cryptoMarket;
 
 public class BrokerHandler extends ChannelInboundHandlerAdapter {
 
+	private int id;
 
-    public BrokerHandler() {
-    }
+	public BrokerHandler() {
+	}
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 //        super.channelActive(ctx);
-        System.out.println("Broker is connecting");
-        ConnectDone connectDone = new ConnectDone(0, 0, Message.ACCEPT_MESSAGE.toString());
+		System.out.println("Broker is connecting");
+		ConnectDone connectDone = new ConnectDone(0, 0, Message.ACCEPT_MESSAGE.toString());
 //        System.out.println(ctx.channel().remoteAddress().toString().substring(11));
-        ctx.writeAndFlush(connectDone);
-    }
+		ctx.writeAndFlush(connectDone);
+	}
 
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+	@Override
+	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 //        super.channelRead(ctx, msg);
-        FIXProtocol protocol = (FIXProtocol) msg;
-        if (protocol.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
-            ConnectDone connectDone = (ConnectDone) msg;
+		FIXProtocol protocol = (FIXProtocol) msg;
+		if (protocol.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
+			ConnectDone connectDone = (ConnectDone) msg;
+			id = connectDone.getId();
 
-        } else if (protocol.getMessageType().equals(Message.SELL_MESSAGE.toString()) ||
-                protocol.getMessageType().equals(Message.BUY_MESSAGE.toString())) {
-            BuyOrSell buyOrSell = (BuyOrSell) msg;
-        }
-    }
+		} else if (protocol.getMessageType().equals(Message.SELL_MESSAGE.toString()) ||
+				protocol.getMessageType().equals(Message.BUY_MESSAGE.toString())) {
+			BuyOrSell buyOrSell = (BuyOrSell) msg;
+		}
+	}
 
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+	@Override
+	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 
-        String command = null;
-        String input = null;
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+		String command = null;
 
-        System.out.println("Press to the enter");
-        input = bufferedReader.readLine();
-        while (true) {
-            System.out.println("1) Buy" + "\n" + "2) Sell");
-            input = bufferedReader.readLine();
-            if (!input.equals("1") && !input.equals("2")) {
-                System.out.println("invalid input: 1 or 2");
-                continue;
-            } else {
-                command = input;
-                break;
-            }
-        }
+		int ibos = 0;
+		int numCrypt = 0;
+		int choiceAm = 0;
+		double choiceBu = 0;
 
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+		BuyOrSell buyOrSell = null;
+		ibos = Integer.parseInt(ChoiceBuyOrSell(command, bufferedReader));
+		command = ChoiceCript(String.valueOf(ibos), bufferedReader);
+		numCrypt = Integer.parseInt(command);
+		choiceAm = (int) Double.parseDouble(ChoiceAmount(numCrypt, bufferedReader));
+		choiceBu = Double.parseDouble(ChoiceBuy(numCrypt, bufferedReader));
 
+		if (ibos == 1) // Buy
+		{
+			//TODO: id market поменять
+			buyOrSell = new BuyOrSell(0, Message.BUY_MESSAGE.toString(), id, ActionMessages.NON.toString(),
+					cryptoMarket.getCryptoList().get(numCrypt).getCode_name().replaceAll("\t",""),
+					choiceAm, choiceBu);
+		}
+		else if (ibos == 2) // Sell
+		{
+			//TODO: id market поменять
+			buyOrSell = new BuyOrSell(0, Message.SELL_MESSAGE.toString(), id, ActionMessages.NON.toString(),
+					cryptoMarket.getCryptoList().get(numCrypt).getCode_name().replaceAll("\t",""),
+					choiceAm, choiceBu);
+		}
+		System.out.println(buyOrSell);
+	}
 
-        while (true) {
-            int iInp = 0;
-            System.out.println(cryptoMarket);
-            input = bufferedReader.readLine();
-            try {
-                iInp = Integer.parseInt(input);
-                if (iInp >= 1 && iInp <= 10) {
-                    command = String.valueOf(iInp);
-                    break;
-                } else {
-                    System.out.println("invalid input: 1 - 10");
-                    continue;
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("invalid input: 1 - 10");
-                continue;
-            }
-        }
+	private String ChoiceBuy(int numCrypt, BufferedReader bufferedReader) throws Exception{
 
-        while (true)
-        {
-            System.out.println("Количество крипты которые хотите купить :)");
-            int iInp = 0;
-            input = bufferedReader.readLine();
-            try {
+		String input = null;
+		String command = null;
+		while (true) {
+			System.out.println("How much do you want to buy crypto?");
+			System.out.print("Enter price: ");
+			input = bufferedReader.readLine();
+			double iInp = 0;
+			double minBuy = cryptoMarket.getCryptoList().get(numCrypt).getMinBuyPrice();
+			try {
+				iInp = Double.parseDouble(input);
+				if (iInp >= minBuy && iInp <= 1000) {
+					command = String.valueOf(iInp);
+					break;
+				} else {
+					System.out.println("invalid input: min price " + minBuy + ", max price 1000");
+					continue;
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("invalid input: min price " + minBuy + ", max price 1000");
+				continue;
+			}
+		}
+		return command;
+	}
 
-            }
-            catch (NumberFormatException e)
-            {
+	private String ChoiceAmount(int numCrupt, BufferedReader bufferedReader) throws Exception {
+		String input = null;
+		String command = null;
+		double amountCrypt = cryptoMarket.getCryptoList().get(numCrupt).getAmountCrypt();
 
-            }
-        }
-//        System.out.println("Press to the enter");
-//        while (true)
-//        {
-//            input = bufferedReader.readLine();
-//            System.out.println("1) Buy" + "\n" + "2) Sell");
-//            if (input.equals("1") || input.equals("2"))
-//            {
-//                command = input;
-//                break;
-//            }
-//            else {
-//                if (!input.equals(""))
-//                    System.out.println("invalid input: 1 or 2");
-//                continue;
-//            }
-//        }
-//
-//        while (true)
-//        {
-//            input = bufferedReader.readLine();
-//            if (command.equals("1")) {
-//                System.out.println("1) название крипты, которые хотите купить( 1) ETH\tEthereum)");
-//            }
-//            else if (command.equals("2"))
-//            {
-//                System.out.println("1) название крипты, которые хотите продать( 1) ETH\tEthereum)");
-//            }
-//        }
-//
-//        while (true)
-//        {
-//            command = bufferedReader.readLine();
-//            System.out.println("Количество крипты которые хотите купить :)");
-//        }
-//
-//        while (true)
-//        {
-//            command = bufferedReader.readLine();
-//            System.out.println("За сколько хочешь купить каждую крипту :)");
-//        }
-    }
+		while (true) {
+			System.out.println("How much cryptocurrency do you want to buy?");
+			System.out.print("Enter quantity: ");
+			double iInp = 0;
 
-    private void CommandBuy() {
+			input = bufferedReader.readLine();
+			try {
+				iInp = Double.parseDouble(input);
+				if (iInp >= 0 && iInp <= amountCrypt) {
+					command = String.valueOf(iInp);
+					break;
+				} else {
+					System.out.println("invalid input: maximum quantity " + amountCrypt);
+					continue;
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("invalid input: maximum quantity " + amountCrypt);
+				continue;
+			}
+		}
+		return command;
+	}
 
-    }
+	private String ChoiceBuyOrSell(String command, BufferedReader bufferedReader) throws Exception {
+
+		String input = null;
+
+		System.out.println("Press to the enter");
+		input = bufferedReader.readLine();
+		while (true) {
+			System.out.println("1) Buy" + "\n" + "2) Sell");
+			input = bufferedReader.readLine();
+			if (!input.equals("1") && !input.equals("2")) {
+				System.out.println("invalid input: 1 or 2");
+				continue;
+			} else {
+				command = input;
+				break;
+			}
+		}
+		return command;
+	}
+
+	private String ChoiceCript(String command, BufferedReader bufferedReader) throws Exception {
+
+		String input = null;
+		while (true) {
+			int iInp = 0;
+			System.out.println(cryptoMarket);
+			try {
+				input = bufferedReader.readLine();
+				iInp = Integer.parseInt(input);
+				if (iInp >= 1 && iInp <= 10) {
+					command = String.valueOf(iInp);
+					break;
+				} else {
+					System.out.println("invalid input: 1 - 10");
+					continue;
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("invalid input: 1 - 10");
+				continue;
+			}
+		}
+		return command;
+	}
 }

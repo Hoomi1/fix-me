@@ -2,16 +2,24 @@ package ft.school21.fix_utils.Messages;
 
 public class BuyOrSell extends FIXProtocol{
 
-    private int actionLength;
-    private String messageAction;
     private int id;
-    private int instrumentLength;
+    private String messageAction;
+    private int actionLength;
     private String instrument;
+    private int instrumentLength;
     private int quantity;
-    private int price;
+    private double price;
 
-    public BuyOrSell(long marketId, String messageType) {
+    public BuyOrSell(long marketId, String messageType, int id, String messageAction,  String instrument, int quantity, double price) {
         super(marketId, messageType);
+        this.id = id;
+        this.messageAction = messageAction;
+        this.actionLength = messageAction.length();
+        this.instrument = instrument;
+        this.instrumentLength = instrument.length();
+        this.quantity = quantity;
+        this.price = price;
+        tagCheckSum();
     }
 
     public BuyOrSell() {
@@ -31,6 +39,7 @@ public class BuyOrSell extends FIXProtocol{
 
     public void setMessageAction(String messageAction) {
         this.messageAction = messageAction;
+        this.actionLength = messageAction.length();
     }
 
     public int getId() {
@@ -55,6 +64,7 @@ public class BuyOrSell extends FIXProtocol{
 
     public void setInstrument(String instrument) {
         this.instrument = instrument;
+        this.instrumentLength = instrument.length();
     }
 
     public int getQuantity() {
@@ -65,11 +75,30 @@ public class BuyOrSell extends FIXProtocol{
         this.quantity = quantity;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
+    }
+
+    public void tagCheckSum()
+    {
+        String str = HashObjectMD5(String.valueOf(getId()));
+        setChecksum(str);
+    }
+
+    @Override
+    public String toString() {
+        return "BuyOrSell{" +
+                "id=" + id +
+                ", messageAction='" + messageAction + '\'' +
+                ", actionLength=" + actionLength +
+                ", instrument='" + instrument + '\'' +
+                ", instrumentLength=" + instrumentLength +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                '}';
     }
 }
