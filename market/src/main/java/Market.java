@@ -1,6 +1,3 @@
-package ft.school21.fix_broker;
-
-import ft.school21.fix_market.CryptoMarket;
 import ft.school21.fix_router.server.Server;
 import ft.school21.fix_utils.Decoder.AllDecoder;
 import ft.school21.fix_utils.Encoder.BuyOrSellEncoder;
@@ -18,18 +15,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-
-public class Broker implements Runnable {
+public class Market implements Runnable{
 
 	private EventLoopGroup workerGroup;
 	private final String HOST = "localhost";
-	public Broker() {
 
+	public Market() {
 	}
 
 	@Override
 	public void run() {
-		int port = Server.BROKER;
+		int port = Server.MARKET;
 
 		workerGroup = new NioEventLoopGroup();
 		try {
@@ -44,7 +40,7 @@ public class Broker implements Runnable {
 									new AllDecoder(),
 									new ConnectEncoder(),
 									new BuyOrSellEncoder(),
-									new BrokerHandler());
+									new MarketHandler());
 						}
 					}).option(ChannelOption.SO_KEEPALIVE, true);
 
@@ -55,13 +51,12 @@ public class Broker implements Runnable {
 		} finally {
 			workerGroup.shutdownGracefully();
 		}
-
 	}
 
-	public static void writeCommand(Broker broker)
-	{
+	public static void writeCommand(Market market) {
+
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-		System.out.println("PERERJEIR");
+		System.out.println("MARKET_PERERJEIR");
 		while (true) {
 			String strCommand = null;
 			try {
@@ -70,9 +65,10 @@ public class Broker implements Runnable {
 				throw new RuntimeException(e);
 			}
 			if (strCommand.equals("exit")) {
-				broker.workerGroup.shutdownGracefully();
+				market.workerGroup.shutdownGracefully();
 				break;
 			}
 		}
 	}
+
 }

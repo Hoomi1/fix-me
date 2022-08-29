@@ -1,6 +1,7 @@
 package ft.school21.fix_router.server;
 
 import ft.school21.fix_utils.Decoder.AllDecoder;
+import ft.school21.fix_utils.Encoder.BuyOrSellEncoder;
 import ft.school21.fix_utils.Encoder.ConnectEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -38,6 +39,7 @@ public class Server implements Runnable {
                         socketChannel.pipeline().addLast(
                                 new AllDecoder(),
                                 new ConnectEncoder(),
+                                new BuyOrSellEncoder(),
                                 new ServerHandler(portServer));
                     }
                 }).option(ChannelOption.SO_BACKLOG, 128)

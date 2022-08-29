@@ -1,5 +1,6 @@
 package ft.school21.fix_utils.Decoder;
 
+import ft.school21.fix_utils.Messages.BuyOrSell;
 import ft.school21.fix_utils.Messages.ConnectDone;
 import ft.school21.fix_utils.Messages.FIXProtocol;
 import ft.school21.fix_utils.MessagesEnum.Message;
@@ -28,7 +29,24 @@ public class AllDecoder extends ReplayingDecoder<Object> {
 			connectDone.setChecksum(byteBuf.readCharSequence(byteBuf.readInt(), charset).toString());
 			list.add(connectDone);
 		}
+		else if (protocol.getMessageType().equals(Message.BUY_MESSAGE.toString()) ||
+						protocol.getMessageType().equals(Message.SELL_MESSAGE.toString()))
+		{
 
+			BuyOrSell buyOrSell = new BuyOrSell();
+
+			buyOrSell.setInstrument(byteBuf.readCharSequence(byteBuf.readInt(),StandardCharsets.UTF_8).toString());
+			buyOrSell.setMessageAction(byteBuf.readCharSequence(byteBuf.readInt(),StandardCharsets.UTF_8).toString());
+			buyOrSell.setMessageType(byteBuf.readCharSequence(byteBuf.readInt(),StandardCharsets.UTF_8).toString());
+			buyOrSell.setId(byteBuf.readInt());
+			buyOrSell.setMarketId(byteBuf.readInt());
+			buyOrSell.setPrice(byteBuf.readInt());
+			buyOrSell.setQuantity(byteBuf.readInt());
+
+			buyOrSell.tagCheckSum();
+			list.add(buyOrSell);
+
+		}
 		System.out.println("POINT D");
 	}
 }

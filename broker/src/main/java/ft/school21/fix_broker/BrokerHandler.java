@@ -8,12 +8,9 @@ import ft.school21.fix_utils.MessagesEnum.ActionMessages;
 import ft.school21.fix_utils.MessagesEnum.Message;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import org.w3c.dom.ls.LSOutput;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-
-import static ft.school21.fix_broker.Broker.cryptoMarket;
 
 public class BrokerHandler extends ChannelInboundHandlerAdapter {
 
@@ -25,7 +22,7 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 //        super.channelActive(ctx);
-		System.out.println("Broker is connecting");
+		System.out.println("Broker is connecting ...");
 		ConnectDone connectDone = new ConnectDone(0, 0, Message.ACCEPT_MESSAGE.toString());
 //        System.out.println(ctx.channel().remoteAddress().toString().substring(11));
 		ctx.writeAndFlush(connectDone);
@@ -39,10 +36,11 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 			ConnectDone connectDone = (ConnectDone) msg;
 			id = connectDone.getId();
 
-		} else if (protocol.getMessageType().equals(Message.SELL_MESSAGE.toString()) ||
-				protocol.getMessageType().equals(Message.BUY_MESSAGE.toString())) {
-			BuyOrSell buyOrSell = (BuyOrSell) msg;
 		}
+//		else if (protocol.getMessageType().equals(Message.SELL_MESSAGE.toString()) ||
+//				protocol.getMessageType().equals(Message.BUY_MESSAGE.toString())) {
+//			BuyOrSell buyOrSell = (BuyOrSell) msg;
+//		}
 	}
 
 	@Override
@@ -67,14 +65,14 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 		{
 			//TODO: id market поменять
 			buyOrSell = new BuyOrSell(0, Message.BUY_MESSAGE.toString(), id, ActionMessages.NON.toString(),
-					cryptoMarket.getCryptoList().get(numCrypt).getCode_name().replaceAll("\t",""),
+					CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getCode_name().replaceAll("\t",""),
 					choiceAm, choiceBu);
 		}
 		else if (ibos == 2) // Sell
 		{
 			//TODO: id market поменять
 			buyOrSell = new BuyOrSell(0, Message.SELL_MESSAGE.toString(), id, ActionMessages.NON.toString(),
-					cryptoMarket.getCryptoList().get(numCrypt).getCode_name().replaceAll("\t",""),
+					CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getCode_name().replaceAll("\t",""),
 					choiceAm, choiceBu);
 		}
 		System.out.println(buyOrSell);
@@ -89,7 +87,7 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 			System.out.print("Enter price: ");
 			input = bufferedReader.readLine();
 			double iInp = 0;
-			double minBuy = cryptoMarket.getCryptoList().get(numCrypt).getMinBuyPrice();
+			double minBuy = CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getMinBuyPrice();
 			try {
 				iInp = Double.parseDouble(input);
 				if (iInp >= minBuy && iInp <= 1000) {
@@ -110,7 +108,7 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 	private String ChoiceAmount(int numCrupt, BufferedReader bufferedReader) throws Exception {
 		String input = null;
 		String command = null;
-		double amountCrypt = cryptoMarket.getCryptoList().get(numCrupt).getAmountCrypt();
+		double amountCrypt = CryptoMarket.getCryptoMarket().getCryptoList().get(numCrupt).getAmountCrypt();
 
 		while (true) {
 			System.out.println("How much cryptocurrency do you want to buy?");
@@ -160,7 +158,7 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 		String input = null;
 		while (true) {
 			int iInp = 0;
-			System.out.println(cryptoMarket);
+			System.out.println(CryptoMarket.getCryptoMarket());
 			try {
 				input = bufferedReader.readLine();
 				iInp = Integer.parseInt(input);

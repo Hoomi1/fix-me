@@ -5,20 +5,28 @@ import java.util.List;
 
 public class CryptoMarket {
 
+    private static CryptoMarket cryptoMarket;
     private final List<Crypto> cryptoList = new ArrayList<>();
-    public CryptoMarket() {
+    private CryptoMarket() {
         cryptoList.add(new Crypto("Bitcoin", "\t\tBTC"));
         cryptoList.add(new Crypto("Ethereum", "\t\tETH"));
-        cryptoList.add(new Crypto("Tether", "\t\tUSDT"));
+        cryptoList.add(new Crypto("Tether", "\t\t\tUSDT"));
         cryptoList.add(new Crypto("USD_Coin", "\t\tUSDC"));
         cryptoList.add(new Crypto("BNB", "\t\t\tBNB"));
         cryptoList.add(new Crypto("Binance_USD", "\tBUSD"));
-        cryptoList.add(new Crypto("Solana", "\t\tSOL"));
+        cryptoList.add(new Crypto("Solana", "\t\t\tSOL"));
         cryptoList.add(new Crypto("Dogecoin", "\t\tDOGE"));
         cryptoList.add(new Crypto("Polkadot", "\t\tDOT"));
         cryptoList.add(new Crypto("Polygon", "\t\tMATIC"));
 
 
+    }
+
+    public static CryptoMarket getCryptoMarket()
+    {
+        if (cryptoMarket == null)
+            cryptoMarket = new CryptoMarket();
+        return cryptoMarket;
     }
 
     public List<Crypto> getCryptoList() {
