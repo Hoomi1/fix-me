@@ -1,6 +1,6 @@
 package ft.school21.fix_broker;
 
-import ft.school21.fix_market.CryptoMarket;
+import ft.school21.fix_market.cryptocurr.CryptoMarket;
 import ft.school21.fix_utils.Messages.BuyOrSell;
 import ft.school21.fix_utils.Messages.ConnectDone;
 import ft.school21.fix_utils.Messages.FIXProtocol;
@@ -29,18 +29,26 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+//		super.exceptionCaught(ctx, cause);
+		System.out.println("EXCEPTION BROKER");
+	}
+
+	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 //        super.channelRead(ctx, msg);
 		FIXProtocol protocol = (FIXProtocol) msg;
 		if (protocol.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
+			System.out.println("ServerHANDLER_MESSAGE");
 			ConnectDone connectDone = (ConnectDone) msg;
 			id = connectDone.getId();
-
+			System.out.println("BROKER id = " + id);
 		}
-//		else if (protocol.getMessageType().equals(Message.SELL_MESSAGE.toString()) ||
-//				protocol.getMessageType().equals(Message.BUY_MESSAGE.toString())) {
-//			BuyOrSell buyOrSell = (BuyOrSell) msg;
-//		}
+		else if (protocol.getMessageType().equals(Message.SELL_MESSAGE.toString()) ||
+				protocol.getMessageType().equals(Message.BUY_MESSAGE.toString())) {
+			System.out.println("ServerHANDLER_BuySell");
+			BuyOrSell buyOrSell = (BuyOrSell) msg;
+		}
 	}
 
 	@Override
@@ -54,28 +62,32 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 		double choiceBu = 0;
 
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-		BuyOrSell buyOrSell = null;
-		ibos = Integer.parseInt(ChoiceBuyOrSell(command, bufferedReader));
-		command = ChoiceCript(String.valueOf(ibos), bufferedReader);
-		numCrypt = Integer.parseInt(command);
-		choiceAm = (int) Double.parseDouble(ChoiceAmount(numCrypt, bufferedReader));
-		choiceBu = Double.parseDouble(ChoiceBuy(numCrypt, bufferedReader));
+		while (true) {
+			BuyOrSell buyOrSell = null;
+			ibos = Integer.parseInt(ChoiceBuyOrSell(command, bufferedReader));
+			command = ChoiceCript(String.valueOf(ibos), bufferedReader);
+			numCrypt = Integer.parseInt(command);
+			choiceAm = (int) Double.parseDouble(ChoiceAmount(numCrypt, bufferedReader));
+			choiceBu = Double.parseDouble(ChoiceBuy(numCrypt, bufferedReader));
 
-		if (ibos == 1) // Buy
-		{
-			//TODO: id market поменять
-			buyOrSell = new BuyOrSell(0, Message.BUY_MESSAGE.toString(), id, ActionMessages.NON.toString(),
-					CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getCode_name().replaceAll("\t",""),
-					choiceAm, choiceBu);
+			if (ibos == 1) // Buy
+			{
+				//TODO: id market поменять
+				buyOrSell = new BuyOrSell(0, Message.BUY_MESSAGE.toString(), id, ActionMessages.NON.toString(),
+						CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getCode_name().replaceAll("\t", ""),
+						choiceAm, choiceBu);
+			} else if (ibos == 2) // Sell
+			{
+				//TODO: id market поменять
+				buyOrSell = new BuyOrSell(0, Message.SELL_MESSAGE.toString(), id, ActionMessages.NON.toString(),
+						CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getCode_name().replaceAll("\t", ""),
+						choiceAm, choiceBu);
+			}
+			if (buyOrSell != null)
+				buyOrSell.tagCheckSum();
+			ctx.writeAndFlush(buyOrSell);
+			System.out.println(buyOrSell);
 		}
-		else if (ibos == 2) // Sell
-		{
-			//TODO: id market поменять
-			buyOrSell = new BuyOrSell(0, Message.SELL_MESSAGE.toString(), id, ActionMessages.NON.toString(),
-					CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getCode_name().replaceAll("\t",""),
-					choiceAm, choiceBu);
-		}
-		System.out.println(buyOrSell);
 	}
 
 	private String ChoiceBuy(int numCrypt, BufferedReader bufferedReader) throws Exception{

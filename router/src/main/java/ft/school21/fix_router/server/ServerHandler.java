@@ -34,11 +34,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 //        super.channelRead(ctx, msg);
         FIXProtocol fixMsg = (FIXProtocol) msg;
-
-
 //        if (fixMsg.getMessageId() == 0)
 //            fixMsg.setMessageId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
         if (fixMsg.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
+            System.out.println("ServerHANDLER_MESSAGE");
             ConnectDone connectDone = (ConnectDone) msg;
             connectDone.setId(parsNewId());
             connectDone.tagCheckSum();
@@ -48,7 +47,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         else if (fixMsg.getMessageType().equals(Message.BUY_MESSAGE.toString()) ||
                 fixMsg.getMessageType().equals(Message.SELL_MESSAGE.toString()))
         {
+            System.out.println("ServerHANDLER_ButSell");
             BuyOrSell buyOrSell = (BuyOrSell) msg;
+
         }
     }
 
@@ -56,7 +57,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 //        super.exceptionCaught(ctx, cause);
         System.out.println("EXCEPTION 2");
-        System.out.println(cause.getMessage());
     }
 
     public int parsNewId() {

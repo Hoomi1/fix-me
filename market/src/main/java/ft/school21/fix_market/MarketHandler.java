@@ -1,5 +1,7 @@
-import ft.school21.fix_market.Crypto;
-import ft.school21.fix_market.CryptoMarket;
+package ft.school21.fix_market;
+
+import ft.school21.fix_market.cryptocurr.Crypto;
+import ft.school21.fix_market.cryptocurr.CryptoMarket;
 import ft.school21.fix_utils.Messages.BuyOrSell;
 import ft.school21.fix_utils.Messages.ConnectDone;
 import ft.school21.fix_utils.Messages.FIXProtocol;
@@ -11,6 +13,7 @@ import java.util.List;
 
 public class MarketHandler extends ChannelInboundHandlerAdapter {
 
+	private int id;
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 //		super.channelActive(ctx);
@@ -38,18 +41,22 @@ public class MarketHandler extends ChannelInboundHandlerAdapter {
 
 		if (protocol.getMessageType().equals(Message.SELL_MESSAGE.toString()) ||
 				protocol.getMessageType().equals(Message.BUY_MESSAGE.toString())) {
+			System.out.println("ServerHANDLER_BuySell");
 			BuyOrSell buyOrSell = (BuyOrSell) msg;
 
+		}
+		else if (protocol.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
+			System.out.println("ServerHANDLER_MESSAGE");
+			ConnectDone connectDone = (ConnectDone) msg;
+			id = connectDone.getId();
+			System.out.println("MARKET id = " + id);
 		}
 	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 //		super.exceptionCaught(ctx, cause);
+		System.out.println("EXCEPTION MARKET");
 	}
 
-	@Override
-	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-//		super.channelReadComplete(ctx);
-	}
 }

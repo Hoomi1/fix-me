@@ -1,4 +1,4 @@
-package ft.school21.fix_market;
+package ft.school21.fix_market.cryptocurr;
 
 import java.util.ArrayList;
 import java.util.List;
