@@ -36,7 +36,6 @@ public class AllDecoder extends ReplayingDecoder<Object> {
             buyOrSell.setMessageType(protocol.getMessageType());
             buyOrSell.setMessageAction(byteBuf.readCharSequence(byteBuf.readInt(), StandardCharsets.UTF_8).toString());
             buyOrSell.setId(byteBuf.readInt());
-            System.out.println(buyOrSell.getId());
             buyOrSell.setInstrument(byteBuf.readCharSequence(byteBuf.readInt(), StandardCharsets.UTF_8).toString());
             buyOrSell.setMarketId(byteBuf.readInt());
             buyOrSell.setPrice(byteBuf.readInt());

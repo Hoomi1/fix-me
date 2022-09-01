@@ -3,6 +3,7 @@ package ft.school21.fix_router.server;
 import ft.school21.fix_utils.Messages.BuyOrSell;
 import ft.school21.fix_utils.Messages.ConnectDone;
 import ft.school21.fix_utils.Messages.FIXProtocol;
+import ft.school21.fix_utils.MessagesEnum.ActionMessages;
 import ft.school21.fix_utils.MessagesEnum.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -14,7 +15,7 @@ import java.util.UUID;
 public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     private int portServer;
-    private HashMap<Integer, ChannelHandlerContext> hashMap  = new HashMap<>();
+    private static HashMap<Integer, ChannelHandlerContext> hashMap  = new HashMap<>();
 
     public ServerHandler(int portServer) {
         this.portServer = portServer;
@@ -34,8 +35,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 //        super.channelRead(ctx, msg);
         FIXProtocol fixMsg = (FIXProtocol) msg;
-//        if (fixMsg.getMessageId() == 0)
-//            fixMsg.setMessageId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
         if (fixMsg.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
             System.out.println("ServerHANDLER_MESSAGE");
             ConnectDone connectDone = (ConnectDone) msg;
@@ -49,7 +48,17 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         {
             System.out.println("ServerHANDLER_ButSell");
             BuyOrSell buyOrSell = (BuyOrSell) msg;
-
+            if (getHashMap().containsKey((int) buyOrSell.getMarketId()))
+            {
+                System.out.println("Sending a request to the market");
+                getHashMap().get((int) buyOrSell.getMarketId()).channel().writeAndFlush(buyOrSell);
+            }
+            else {
+                System.err.println("Error market id");
+                buyOrSell.setMessageAction(ActionMessages.REJECT_MESSAGE.toString());
+                buyOrSell.tagCheckSum();
+                ctx.writeAndFlush(buyOrSell);
+            }
         }
     }
 
@@ -69,5 +78,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         else
             strId = str1.concat("00");
         return Integer.parseInt(strId);
+    }
+
+    public HashMap<Integer, ChannelHandlerContext> getHashMap() {
+        return hashMap;
     }
 }

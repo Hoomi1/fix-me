@@ -15,8 +15,10 @@ import java.io.InputStreamReader;
 public class BrokerHandler extends ChannelInboundHandlerAdapter {
 
 	private int id;
+	private Wallet wallet;
 
-	public BrokerHandler() {
+	public BrokerHandler(Wallet wallet) {
+		this.wallet = wallet;
 	}
 
 	@Override
@@ -69,17 +71,15 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 			numCrypt = Integer.parseInt(command);
 			choiceAm = (int) Double.parseDouble(ChoiceAmount(numCrypt, bufferedReader));
 			choiceBu = Double.parseDouble(ChoiceBuy(numCrypt, bufferedReader));
-
+			int marketId = ChoiceMarketId(bufferedReader);
 			if (ibos == 1) // Buy
 			{
-				//TODO: id market поменять
-				buyOrSell = new BuyOrSell(0, Message.BUY_MESSAGE.toString(), id, ActionMessages.NON.toString(),
+				buyOrSell = new BuyOrSell(marketId, Message.BUY_MESSAGE.toString(), id, ActionMessages.NON.toString(),
 						CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getCode_name().replaceAll("\t", ""),
 						choiceAm, choiceBu);
 			} else if (ibos == 2) // Sell
 			{
-				//TODO: id market поменять
-				buyOrSell = new BuyOrSell(0, Message.SELL_MESSAGE.toString(), id, ActionMessages.NON.toString(),
+				buyOrSell = new BuyOrSell(marketId, Message.SELL_MESSAGE.toString(), id, ActionMessages.NON.toString(),
 						CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getCode_name().replaceAll("\t", ""),
 						choiceAm, choiceBu);
 			}
@@ -88,6 +88,25 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 			ctx.writeAndFlush(buyOrSell);
 			System.out.println(buyOrSell);
 		}
+	}
+
+	private int ChoiceMarketId(BufferedReader bufferedReader) throws Exception{
+
+		String input = null;
+		int marketId;
+		while (true) {
+			System.out.print("Enter market id: ");
+			input = bufferedReader.readLine();
+			marketId = 0;
+			try {
+				marketId = Integer.parseInt(input);
+				break;
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input");
+				continue;
+			}
+		}
+		return marketId;
 	}
 
 	private String ChoiceBuy(int numCrypt, BufferedReader bufferedReader) throws Exception{

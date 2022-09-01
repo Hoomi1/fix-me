@@ -22,6 +22,7 @@ public class Broker implements Runnable {
 
 	private EventLoopGroup workerGroup;
 	private final String HOST = "localhost";
+	private Wallet wallet = new Wallet(1000);
 	public Broker() {
 
 	}
@@ -43,7 +44,7 @@ public class Broker implements Runnable {
 									new AllDecoder(),
 									new ConnectEncoder(),
 									new BuyOrSellEncoder(),
-									new BrokerHandler());
+									new BrokerHandler(wallet));
 						}
 					}).option(ChannelOption.SO_KEEPALIVE, true);
 
