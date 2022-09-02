@@ -19,7 +19,7 @@ public class BuyOrSellEncoder extends MessageToByteEncoder<BuyOrSell> {
 
         if (buyOrSell.getMessageType().equals(Message.BUY_MESSAGE.toString()) ||
                 buyOrSell.getMessageType().equals(Message.SELL_MESSAGE.toString())) {
-            System.out.println("BuySell_ENCODER");
+
             byteBuf.writeInt(buyOrSell.getActionLength());
             byteBuf.writeCharSequence(buyOrSell.getMessageAction(), StandardCharsets.UTF_8);
             byteBuf.writeInt(buyOrSell.getId());
@@ -30,6 +30,7 @@ public class BuyOrSellEncoder extends MessageToByteEncoder<BuyOrSell> {
             byteBuf.writeInt(buyOrSell.getQuantity());
             byteBuf.writeInt(buyOrSell.getChecksumLength());
             byteBuf.writeCharSequence(buyOrSell.getChecksum(), StandardCharsets.UTF_8);
+
         }
     }
 }

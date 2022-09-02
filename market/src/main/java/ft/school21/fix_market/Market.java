@@ -58,7 +58,6 @@ public class Market implements Runnable{
 	public static void writeCommand(Market market) {
 
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-		System.out.println("MARKET_PERERJEIR");
 		while (true) {
 			String strCommand = null;
 			try {

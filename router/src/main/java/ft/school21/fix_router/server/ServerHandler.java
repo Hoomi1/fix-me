@@ -36,7 +36,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 //        super.channelRead(ctx, msg);
         FIXProtocol fixMsg = (FIXProtocol) msg;
         if (fixMsg.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
-            System.out.println("ServerHANDLER_MESSAGE");
             ConnectDone connectDone = (ConnectDone) msg;
             connectDone.setId(parsNewId());
             connectDone.tagCheckSum();
@@ -46,26 +45,26 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         else if (fixMsg.getMessageType().equals(Message.BUY_MESSAGE.toString()) ||
                 fixMsg.getMessageType().equals(Message.SELL_MESSAGE.toString()))
         {
-            System.out.println("ServerHANDLER_ButSell");
             BuyOrSell buyOrSell = (BuyOrSell) msg;
+
+            if (buyOrSell.getMessageAction().equals(ActionMessages.EXECUTE_MESSAGE.toString()) ||
+                    buyOrSell.getMessageAction().equals(ActionMessages.REJECT_MESSAGE.toString()))
+            {
+                hashMap.get(buyOrSell.getId()).writeAndFlush(buyOrSell);
+                return;
+            }
             if (getHashMap().containsKey((int) buyOrSell.getMarketId()))
             {
-                System.out.println("Sending a request to the market");
+                System.out.println("[ROUTER] [INFO] Sending a request to the market");
                 getHashMap().get((int) buyOrSell.getMarketId()).channel().writeAndFlush(buyOrSell);
             }
             else {
-                System.err.println("Error market id");
+                System.out.println("[ROUTER] [INFO] Error market id");
                 buyOrSell.setMessageAction(ActionMessages.REJECT_MESSAGE.toString());
                 buyOrSell.tagCheckSum();
                 ctx.writeAndFlush(buyOrSell);
             }
         }
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-//        super.exceptionCaught(ctx, cause);
-        System.out.println("EXCEPTION 2");
     }
 
     public int parsNewId() {

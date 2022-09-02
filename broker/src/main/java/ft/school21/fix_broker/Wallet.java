@@ -22,7 +22,7 @@ public class Wallet {
         Random random = new Random();
 
         for (int i = 0; i < 3; i++) {
-            walletCrypto.add(CryptoMarket.getCryptoMarket().getCryptoList().get(random.nextInt(0, 9)));
+            walletCrypto.add(CryptoMarket.getCryptoMarket().getCryptoList().get(random.nextInt(9) + 1));
         }
     }
 

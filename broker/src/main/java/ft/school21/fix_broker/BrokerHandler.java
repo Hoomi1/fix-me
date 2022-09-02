@@ -31,25 +31,23 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-//		super.exceptionCaught(ctx, cause);
-		System.out.println("EXCEPTION BROKER");
-	}
-
-	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 //        super.channelRead(ctx, msg);
 		FIXProtocol protocol = (FIXProtocol) msg;
 		if (protocol.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
-			System.out.println("ServerHANDLER_MESSAGE");
 			ConnectDone connectDone = (ConnectDone) msg;
 			id = connectDone.getId();
 			System.out.println("BROKER id = " + id);
 		}
 		else if (protocol.getMessageType().equals(Message.SELL_MESSAGE.toString()) ||
 				protocol.getMessageType().equals(Message.BUY_MESSAGE.toString())) {
-			System.out.println("ServerHANDLER_BuySell");
 			BuyOrSell buyOrSell = (BuyOrSell) msg;
+			if (buyOrSell.getMessageAction().equals(ActionMessages.EXECUTE_MESSAGE.toString()) ||
+					buyOrSell.getMessageAction().equals(ActionMessages.REJECT_MESSAGE.toString()))
+			{
+				System.out.println("Request " + buyOrSell.getMessageAction());
+				return;
+			}
 		}
 	}
 
@@ -61,33 +59,61 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 		int ibos = 0;
 		int numCrypt = 0;
 		int choiceAm = 0;
-		double choiceBu = 0;
+		double choiceBS = 0;
 
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-		while (true) {
 			BuyOrSell buyOrSell = null;
 			ibos = Integer.parseInt(ChoiceBuyOrSell(command, bufferedReader));
-			command = ChoiceCript(String.valueOf(ibos), bufferedReader);
+			command = ChoiceCript(bufferedReader);
 			numCrypt = Integer.parseInt(command);
 			choiceAm = (int) Double.parseDouble(ChoiceAmount(numCrypt, bufferedReader));
-			choiceBu = Double.parseDouble(ChoiceBuy(numCrypt, bufferedReader));
+			if (ibos == 1)
+				choiceBS = Double.parseDouble(ChoiceBuy(numCrypt, bufferedReader));
+			else if (ibos == 2)
+				choiceBS = Double.parseDouble(ChoiceSell(numCrypt, bufferedReader));
 			int marketId = ChoiceMarketId(bufferedReader);
 			if (ibos == 1) // Buy
 			{
 				buyOrSell = new BuyOrSell(marketId, Message.BUY_MESSAGE.toString(), id, ActionMessages.NON.toString(),
 						CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getCode_name().replaceAll("\t", ""),
-						choiceAm, choiceBu);
+						choiceAm, choiceBS);
 			} else if (ibos == 2) // Sell
 			{
 				buyOrSell = new BuyOrSell(marketId, Message.SELL_MESSAGE.toString(), id, ActionMessages.NON.toString(),
 						CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getCode_name().replaceAll("\t", ""),
-						choiceAm, choiceBu);
+						choiceAm, choiceBS);
 			}
 			if (buyOrSell != null)
 				buyOrSell.tagCheckSum();
 			ctx.writeAndFlush(buyOrSell);
-			System.out.println(buyOrSell);
+//			System.out.println(buyOrSell);
+	}
+
+	private String ChoiceSell(int numCrypt, BufferedReader bufferedReader) throws Exception{
+
+		String input = null;
+		String command = null;
+		while (true) {
+			System.out.println("How much do you want to sell?");
+			System.out.print("Enter price: ");
+			input = bufferedReader.readLine();
+			double iInp = 0;
+			double minSell = CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getMinSellPrice();
+			try {
+				iInp = Double.parseDouble(input);
+				if (iInp >= minSell && iInp <= 1000) {
+					command = String.valueOf(iInp);
+					break;
+				} else {
+					System.out.println("invalid input: min price " + minSell + ", max price 1000");
+					continue;
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("invalid input: min price " + minSell + ", max price 1000");
+				continue;
+			}
 		}
+		return command;
 	}
 
 	private int ChoiceMarketId(BufferedReader bufferedReader) throws Exception{
@@ -184,24 +210,26 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 		return command;
 	}
 
-	private String ChoiceCript(String command, BufferedReader bufferedReader) throws Exception {
+	private String ChoiceCript(BufferedReader bufferedReader) throws Exception {
 
 		String input = null;
+		String command = null;
+
 		while (true) {
 			int iInp = 0;
 			System.out.println(CryptoMarket.getCryptoMarket());
 			try {
 				input = bufferedReader.readLine();
 				iInp = Integer.parseInt(input);
-				if (iInp >= 1 && iInp <= 10) {
+				if (iInp >= 0 && iInp <= 9) {
 					command = String.valueOf(iInp);
 					break;
 				} else {
-					System.out.println("invalid input: 1 - 10");
+					System.out.println("invalid input: 0 - 9");
 					continue;
 				}
 			} catch (NumberFormatException e) {
-				System.out.println("invalid input: 1 - 10");
+				System.out.println("invalid input: 0 - 9");
 				continue;
 			}
 		}

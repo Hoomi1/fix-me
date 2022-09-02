@@ -10,6 +10,7 @@ import io.netty.handler.codec.ReplayingDecoder;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AllDecoder extends ReplayingDecoder<Object> {
@@ -23,7 +24,6 @@ public class AllDecoder extends ReplayingDecoder<Object> {
         protocol.setMessageType(byteBuf.readCharSequence(byteBuf.readInt(), charset).toString());
 
         if (protocol.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
-            System.out.println("MESSAGE_DECODER");
             ConnectDone connectDone = new ConnectDone();
             connectDone.setMessageType(protocol.getMessageType());
             connectDone.setId(byteBuf.readInt());
@@ -31,8 +31,12 @@ public class AllDecoder extends ReplayingDecoder<Object> {
             list.add(connectDone);
         } else if (protocol.getMessageType().equals(Message.BUY_MESSAGE.toString()) ||
                 protocol.getMessageType().equals(Message.SELL_MESSAGE.toString())) {
-            System.out.println("BuySell_DECODER");
             BuyOrSell buyOrSell = new BuyOrSell();
+//            List<Integer> list1 = new ArrayList<>();
+//            list1.add(1);
+//            list1.add(2);
+//            list1.add(3);
+//            list1.add(4);
             buyOrSell.setMessageType(protocol.getMessageType());
             buyOrSell.setMessageAction(byteBuf.readCharSequence(byteBuf.readInt(), StandardCharsets.UTF_8).toString());
             buyOrSell.setId(byteBuf.readInt());
@@ -42,6 +46,7 @@ public class AllDecoder extends ReplayingDecoder<Object> {
             buyOrSell.setQuantity(byteBuf.readInt());
             buyOrSell.tagCheckSum();
             list.add(buyOrSell);
+//            list.add(list1);
         }
     }
 }

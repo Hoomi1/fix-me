@@ -61,7 +61,6 @@ public class Broker implements Runnable {
 	public static void writeCommand(Broker broker)
 	{
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-		System.out.println("PERERJEIR");
 		while (true) {
 			String strCommand = null;
 			try {

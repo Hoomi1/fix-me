@@ -17,8 +17,6 @@ public class ConnectEncoder extends MessageToByteEncoder<ConnectDone> {
 
         if (connectDone.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
 
-            System.out.println("MESSAGE_ENCODER");
-
             byteBuf.writeInt(connectDone.getId());
             byteBuf.writeInt(connectDone.getChecksumLength());
             byteBuf.writeCharSequence(connectDone.getChecksum(), StandardCharsets.UTF_8);

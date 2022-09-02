@@ -11,11 +11,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 import java.util.List;
+import java.util.Random;
 
 public class MarketHandler extends ChannelInboundHandlerAdapter {
 
     private int id;
-
+    private Random random = new Random();
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
 //		super.channelActive(ctx);
@@ -28,8 +29,6 @@ public class MarketHandler extends ChannelInboundHandlerAdapter {
             System.out.println("[MARKET] [INFO] " + cryptos.get(i).getName() + " " + cryptos.get(i).getCode_name() + " \t" + cryptos.get(i).getAmountCrypt() + "\t\t " +
                     cryptos.get(i).getMinBuyPrice() + " | " + cryptos.get(i).getMinSellPrice());
         }
-
-
         ConnectDone connectDone = new ConnectDone(0, 0, Message.ACCEPT_MESSAGE.toString());
         ctx.writeAndFlush(connectDone);
     }
@@ -41,8 +40,15 @@ public class MarketHandler extends ChannelInboundHandlerAdapter {
         FIXProtocol protocol = (FIXProtocol) msg;
         if (protocol.getMessageType().equals(Message.SELL_MESSAGE.toString()) ||
                 protocol.getMessageType().equals(Message.BUY_MESSAGE.toString())) {
-            System.out.println("ServerHANDLER_BuySell");
             BuyOrSell buyOrSell = (BuyOrSell) msg;
+
+            if (buyOrSell.getMessageAction().equals(ActionMessages.EXECUTE_MESSAGE.toString()) ||
+                    buyOrSell.getMessageAction().equals(ActionMessages.REJECT_MESSAGE.toString()))
+            {
+                System.out.println("Request " + buyOrSell.getMessageType());
+                return;
+            }
+
             if (buyOrSell.getMessageType().equals(Message.BUY_MESSAGE.toString())) {
                 forBuy(ctx, buyOrSell);
             } else if (buyOrSell.getMessageType().equals(Message.SELL_MESSAGE.toString())) {
@@ -50,7 +56,6 @@ public class MarketHandler extends ChannelInboundHandlerAdapter {
             }
 
         } else if (protocol.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
-            System.out.println("ServerHANDLER_MESSAGE");
             ConnectDone connectDone = (ConnectDone) msg;
             id = connectDone.getId();
             System.out.println("MARKET id = " + id);
@@ -59,38 +64,33 @@ public class MarketHandler extends ChannelInboundHandlerAdapter {
 
 	//TODO: адекватные условия для запросов
 	private void forBuy(ChannelHandlerContext ctx, BuyOrSell buyOrSell) {
-//		if ()
-		buyOrSell.setMessageAction(ActionMessages.REJECT_MESSAGE.toString());
-		System.out.println("Request denied :( -> REJECT");
-//		if ()
-		buyOrSell.setMessageAction(ActionMessages.EXECUTE_MESSAGE.toString());
-		System.out.println("Thanks you for buying :) -> EXECUTE");
 
+        if (random.nextBoolean()) {
+            buyOrSell.setMessageAction(ActionMessages.REJECT_MESSAGE.toString());
+            System.out.println("[MARKET] [INFO] Request denied :( -> REJECT");
+        }
+		else
+        {
+            buyOrSell.setMessageAction(ActionMessages.EXECUTE_MESSAGE.toString());
+            System.out.println("[MARKET] [INFO] Thanks you for buying :) -> EXECUTE");
+        }
 		buyOrSell.tagCheckSum();
 		ctx.writeAndFlush(buyOrSell);
 	}
 
 	//TODO: адекватные условия для запросов
 	private void forSell(ChannelHandlerContext ctx, BuyOrSell buyOrSell) {
-//		if ()
-		buyOrSell.setMessageAction(ActionMessages.REJECT_MESSAGE.toString());
-		System.out.println("Request denied :( -> REJECT");
-//		if ()
-		buyOrSell.setMessageAction(ActionMessages.EXECUTE_MESSAGE.toString());
-		System.out.println("Thanks you for buying :) -> EXECUTE");
 
+        if (random.nextBoolean()) {
+            buyOrSell.setMessageAction(ActionMessages.REJECT_MESSAGE.toString());
+            System.out.println("[MARKET] [INFO] Request denied :( -> REJECT");
+        }
+        else {
+            buyOrSell.setMessageAction(ActionMessages.EXECUTE_MESSAGE.toString());
+            System.out.println("[MARKET] [INFO] Thanks you for selling :) -> EXECUTE");
+        }
 		buyOrSell.tagCheckSum();
 		ctx.writeAndFlush(buyOrSell);
 	}
-
-
-
-
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-//		super.exceptionCaught(ctx, cause);
-        System.out.println("EXCEPTION MARKET");
-    }
 
 }
