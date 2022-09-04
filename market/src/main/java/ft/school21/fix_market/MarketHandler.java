@@ -1,7 +1,7 @@
 package ft.school21.fix_market;
 
-import ft.school21.fix_market.cryptocurr.Crypto;
-import ft.school21.fix_market.cryptocurr.CryptoMarket;
+import ft.school21.fix_market.Cryptocurr.Crypto;
+import ft.school21.fix_market.Cryptocurr.CryptoMarket;
 import ft.school21.fix_utils.Messages.BuyOrSell;
 import ft.school21.fix_utils.Messages.ConnectDone;
 import ft.school21.fix_utils.Messages.FIXProtocol;
@@ -10,10 +10,15 @@ import ft.school21.fix_utils.MessagesEnum.Message;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 public class MarketHandler extends ChannelInboundHandlerAdapter {
+
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy-HH:mm:ss");
+    Date date = new Date(System.currentTimeMillis());
 
     private int id;
     private Random random = new Random();
@@ -67,12 +72,12 @@ public class MarketHandler extends ChannelInboundHandlerAdapter {
 
         if (random.nextBoolean()) {
             buyOrSell.setMessageAction(ActionMessages.REJECT_MESSAGE.toString());
-            System.out.println("[MARKET] [INFO] Request denied :( -> REJECT");
+            System.out.println("[" + simpleDateFormat.format(date) + "] [MARKET] [INFO] Request denied :( -> REJECT");
         }
 		else
         {
             buyOrSell.setMessageAction(ActionMessages.EXECUTE_MESSAGE.toString());
-            System.out.println("[MARKET] [INFO] Thanks you for buying :) -> EXECUTE");
+            System.out.println("[" + simpleDateFormat.format(date) + "] [MARKET] [INFO] Thanks you for buying :) -> EXECUTE");
         }
 		buyOrSell.tagCheckSum();
 		ctx.writeAndFlush(buyOrSell);
@@ -83,11 +88,11 @@ public class MarketHandler extends ChannelInboundHandlerAdapter {
 
         if (random.nextBoolean()) {
             buyOrSell.setMessageAction(ActionMessages.REJECT_MESSAGE.toString());
-            System.out.println("[MARKET] [INFO] Request denied :( -> REJECT");
+            System.out.println("[" + simpleDateFormat.format(date) + "] [MARKET] [INFO] Request denied :( -> REJECT");
         }
         else {
             buyOrSell.setMessageAction(ActionMessages.EXECUTE_MESSAGE.toString());
-            System.out.println("[MARKET] [INFO] Thanks you for selling :) -> EXECUTE");
+            System.out.println("[" + simpleDateFormat.format(date) + "] [MARKET] [INFO] Thanks you for selling :) -> EXECUTE");
         }
 		buyOrSell.tagCheckSum();
 		ctx.writeAndFlush(buyOrSell);

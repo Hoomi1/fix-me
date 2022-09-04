@@ -7,8 +7,6 @@ import java.text.SimpleDateFormat;
 
 public class FIXProtocol {
 
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyyyy-HH:mm:ss");
-
     private int messageTypeLength;
     private String messageType;
     private long marketId;

@@ -1,7 +1,7 @@
 package ft.school21.fix_broker;
 
-import ft.school21.fix_market.cryptocurr.Crypto;
-import ft.school21.fix_market.cryptocurr.CryptoMarket;
+import ft.school21.fix_market.Cryptocurr.Crypto;
+import ft.school21.fix_market.Cryptocurr.CryptoMarket;
 
 import java.util.ArrayList;
 import java.util.List;

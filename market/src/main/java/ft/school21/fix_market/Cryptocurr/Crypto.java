@@ -1,4 +1,4 @@
-package ft.school21.fix_market.cryptocurr;
+package ft.school21.fix_market.Cryptocurr;
 
 import java.util.concurrent.ThreadLocalRandom;
 

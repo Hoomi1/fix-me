@@ -9,10 +9,15 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
+
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy-HH:mm:ss");
+    private Date date = new Date(System.currentTimeMillis());
 
     private int portServer;
     private static HashMap<Integer, ChannelHandlerContext> hashMap  = new HashMap<>();
@@ -55,11 +60,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             }
             if (getHashMap().containsKey((int) buyOrSell.getMarketId()))
             {
-                System.out.println("[ROUTER] [INFO] Sending a request to the market");
+                System.out.println("[" + simpleDateFormat.format(date) + "] [ROUTER] [INFO] Sending a request to the market");
                 getHashMap().get((int) buyOrSell.getMarketId()).channel().writeAndFlush(buyOrSell);
+
             }
             else {
-                System.out.println("[ROUTER] [INFO] Error market id");
+                System.out.println("[" + simpleDateFormat.format(date) + "] [ROUTER] [INFO] Error market id");
                 buyOrSell.setMessageAction(ActionMessages.REJECT_MESSAGE.toString());
                 buyOrSell.tagCheckSum();
                 ctx.writeAndFlush(buyOrSell);
