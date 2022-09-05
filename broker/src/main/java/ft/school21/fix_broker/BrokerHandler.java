@@ -97,6 +97,11 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
         String str = "[" + simpleDateFormat.format(date) + "] " + "[BROKER] [INFO] " + "['" + buyOrSell.getId() +
                 "','Crypto','" + buyOrSell.getInstrument() + "'," + buyOrSell.getQuantity() + "," +
                 buyOrSell.getPrice() + "," + ((i == 1) ? "'BUY','" : "'SELL','") + action + "']";
+
+        String headers = "I=" + buyOrSell.getInstrument() + "|A=" + buyOrSell.getQuantity() + "|M=Crypto|P=" + buyOrSell.getPrice() + "|";
+        int tagTen = (headers.length() % 256);
+        String tagTenStr = String.valueOf(tagTen).length() < 3 ? "0" + String.valueOf(tagTen) : String.valueOf(tagTen);
+        String protocol = "|109=" + buyOrSell.getId() + "|9=" + headers.length() + "|" + headers + "10=" + tagTenStr + "|";
 //        Transaction transaction = new Transaction("Hello");
 //        ImplementTrans implementTrans = new ImplementTrans();
 //        implementTrans.setTransaction(transaction);
@@ -108,7 +113,7 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 //            throw new RuntimeException(e);
 //        }
         System.out.println(str);
-
+        System.out.println(protocol);
     }
 
     private String ChoiceSell(int numCrypt, BufferedReader bufferedReader) throws Exception {

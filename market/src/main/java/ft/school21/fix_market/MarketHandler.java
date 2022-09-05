@@ -50,6 +50,7 @@ public class MarketHandler extends ChannelInboundHandlerAdapter {
             if (buyOrSell.getMessageAction().equals(ActionMessages.EXECUTE_MESSAGE.toString()) ||
                     buyOrSell.getMessageAction().equals(ActionMessages.REJECT_MESSAGE.toString()))
             {
+                //TODO: незаходит, сдесь должен писаться fix protocol exp: "router->|efwef|rfrg|"
                 System.out.println("Request " + buyOrSell.getMessageType());
                 return;
             }
