@@ -2,6 +2,7 @@ package ft.school21.fix_market;
 
 import ft.school21.fix_market.Cryptocurr.Crypto;
 import ft.school21.fix_market.Cryptocurr.CryptoMarket;
+import ft.school21.fix_router.server.ServerHandler;
 import ft.school21.fix_utils.Messages.BuyOrSell;
 import ft.school21.fix_utils.Messages.ConnectDone;
 import ft.school21.fix_utils.Messages.FIXProtocol;
@@ -46,15 +47,6 @@ public class MarketHandler extends ChannelInboundHandlerAdapter {
         if (protocol.getMessageType().equals(Message.SELL_MESSAGE.toString()) ||
                 protocol.getMessageType().equals(Message.BUY_MESSAGE.toString())) {
             BuyOrSell buyOrSell = (BuyOrSell) msg;
-
-            if (buyOrSell.getMessageAction().equals(ActionMessages.EXECUTE_MESSAGE.toString()) ||
-                    buyOrSell.getMessageAction().equals(ActionMessages.REJECT_MESSAGE.toString()))
-            {
-                //TODO: незаходит, сдесь должен писаться fix protocol exp: "router->|efwef|rfrg|"
-                System.out.println("Request " + buyOrSell.getMessageType());
-                return;
-            }
-
             if (buyOrSell.getMessageType().equals(Message.BUY_MESSAGE.toString())) {
                 forBuy(ctx, buyOrSell);
             } else if (buyOrSell.getMessageType().equals(Message.SELL_MESSAGE.toString())) {
@@ -64,37 +56,63 @@ public class MarketHandler extends ChannelInboundHandlerAdapter {
         } else if (protocol.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
             ConnectDone connectDone = (ConnectDone) msg;
             id = connectDone.getId();
+            String headers = "|109=" + id + "|M=Crypto|";
+            int tagTen = (headers.length() % 256);
+            String tagTenStr = String.valueOf(tagTen).length() < 3 ? "0" + String.valueOf(tagTen) : String.valueOf(tagTen);
+            System.out.println("Router -> " + FIXProtocol.ANSI_PURPLE + headers + "10=" + tagTenStr + "|" + FIXProtocol.ANSI_RESET);
             System.out.println("MARKET id = " + id);
         }
     }
 
-	//TODO: адекватные условия для запросов
 	private void forBuy(ChannelHandlerContext ctx, BuyOrSell buyOrSell) {
 
+        String text = null;
         if (random.nextBoolean()) {
             buyOrSell.setMessageAction(ActionMessages.REJECT_MESSAGE.toString());
-            System.out.println("[" + simpleDateFormat.format(date) + "] [MARKET] [INFO] Request denied :( -> REJECT");
+//            buyOrSell.setText("Request denied :( -> REJECT\0");
+            text = "Request denied :( -> REJECT";
+            System.out.println("[" + simpleDateFormat.format(date) + "] [MARKET] [INFO] " + text);
         }
 		else
         {
             buyOrSell.setMessageAction(ActionMessages.EXECUTE_MESSAGE.toString());
-            System.out.println("[" + simpleDateFormat.format(date) + "] [MARKET] [INFO] Thanks you for buying :) -> EXECUTE");
+//            buyOrSell.setText("Thanks you for buying :) -> EXECUTE\0");
+            text = "Thanks you for buying :) -> EXECUTE";
+            System.out.println("[" + simpleDateFormat.format(date) + "] [MARKET] [INFO] " + text);
         }
+        transactionFix(buyOrSell, text);
 		buyOrSell.tagCheckSum();
 		ctx.writeAndFlush(buyOrSell);
 	}
 
-	//TODO: адекватные условия для запросов
-	private void forSell(ChannelHandlerContext ctx, BuyOrSell buyOrSell) {
+    private void transactionFix(BuyOrSell buyOrSell, String text) {
+//        String text = null;
+//        text = buyOrSell.getText();
+        String headers = "I=" + buyOrSell.getInstrument() + "|A=" + buyOrSell.getQuantity() + "|M=Crypto|P=" + buyOrSell.getPrice() + "|58="
+                + text + "|";
+        int tagTen = (headers.length() % 256);
+        String tagTenStr = String.valueOf(tagTen).length() < 3 ? "0" + String.valueOf(tagTen) : String.valueOf(tagTen);
+        String protocol = "|109=" + buyOrSell.getMarketId() + "|9=" + headers.length() + "|" + headers + "10=" + tagTenStr + "|";
+        System.out.print(FIXProtocol.ANSI_PURPLE);
+        System.out.println(protocol);
+        System.out.print(FIXProtocol.ANSI_RESET);
+    }
 
+	private void forSell(ChannelHandlerContext ctx, BuyOrSell buyOrSell) {
+        String text = null;
         if (random.nextBoolean()) {
             buyOrSell.setMessageAction(ActionMessages.REJECT_MESSAGE.toString());
-            System.out.println("[" + simpleDateFormat.format(date) + "] [MARKET] [INFO] Request denied :( -> REJECT");
+//            buyOrSell.setText("Request denied :( -> REJECT\0");
+            text = "Request denied :( -> REJECT";
+            System.out.println("[" + simpleDateFormat.format(date) + "] [MARKET] [INFO] " + text);
         }
         else {
+//            buyOrSell.setText("Thanks you for selling :) -> EXECUTE\0");
+            text = "Thanks you for selling :) -> EXECUTE";
             buyOrSell.setMessageAction(ActionMessages.EXECUTE_MESSAGE.toString());
-            System.out.println("[" + simpleDateFormat.format(date) + "] [MARKET] [INFO] Thanks you for selling :) -> EXECUTE");
+            System.out.println("[" + simpleDateFormat.format(date) + "] [MARKET] [INFO] " + text);
         }
+        transactionFix(buyOrSell, text);
 		buyOrSell.tagCheckSum();
 		ctx.writeAndFlush(buyOrSell);
 	}

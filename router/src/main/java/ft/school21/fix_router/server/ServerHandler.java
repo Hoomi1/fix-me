@@ -56,7 +56,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     buyOrSell.getMessageAction().equals(ActionMessages.REJECT_MESSAGE.toString()))
             {
                 hashMap.get(buyOrSell.getId()).writeAndFlush(buyOrSell);
-//                transactionFix(buyOrSell);
+                System.out.print("Market -> ");
+                transactionFix(buyOrSell, 1);
                 return;
             }
             if (getHashMap().containsKey((int) buyOrSell.getMarketId()))
@@ -64,25 +65,39 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 System.out.println("[" + simpleDateFormat.format(date) + "] [ROUTER] [INFO] Sending a request to the market");
                 getHashMap().get((int) buyOrSell.getMarketId()).channel().writeAndFlush(buyOrSell);
                 System.out.print("Broker -> ");
-                transactionFix(buyOrSell);
+                transactionFix(buyOrSell, 0);
             }
             else {
                 System.out.println("[" + simpleDateFormat.format(date) + "] [ROUTER] [INFO] Error market id");
+                System.out.print("Broker -> ");
+                transactionFix(buyOrSell, 0);
                 buyOrSell.setMessageAction(ActionMessages.REJECT_MESSAGE.toString());
                 buyOrSell.tagCheckSum();
-                System.out.print("Broker -> ");
-                transactionFix(buyOrSell);
                 ctx.writeAndFlush(buyOrSell);
             }
         }
     }
 
-    private void transactionFix(BuyOrSell buyOrSell) {
+    private void transactionFix(BuyOrSell buyOrSell, int port) {
+//        String headers = null;
+//        if (buyOrSell.getMessageAction().equals(ActionMessages.NON.toString()))
         String headers = "I=" + buyOrSell.getInstrument() + "|A=" + buyOrSell.getQuantity() + "|M=Crypto|P=" + buyOrSell.getPrice() + "|";
+//        else {
+//            char[] t = new char[buyOrSell.getText().length()];
+//            for (int i = 0; i < t.length; i++) {
+//                if (buyOrSell.getText().charAt(i) == '\0')
+//                    break;
+//                t[i] = buyOrSell.getText().charAt(i);
+//            }
+//            String text = String.valueOf(t);
+//            headers = "I=" + buyOrSell.getInstrument() + "|A=" + buyOrSell.getQuantity() + "|M=Crypto|P=" + buyOrSell.getPrice() + "|58=" + text + "|";
+//        }
         int tagTen = (headers.length() % 256);
         String tagTenStr = String.valueOf(tagTen).length() < 3 ? "0" + String.valueOf(tagTen) : String.valueOf(tagTen);
-        String protocol = "|109=" + buyOrSell.getId() + "|9=" + headers.length() + "|" + headers + "10=" + tagTenStr + "|";
+        String protocol = "|109=" + ((port == 0) ? buyOrSell.getId() : buyOrSell.getMarketId()) + "|9=" + headers.length() + "|" + headers + "10=" + tagTenStr + "|";
+        System.out.print(FIXProtocol.ANSI_PURPLE);
         System.out.println(protocol);
+        System.out.print(FIXProtocol.ANSI_RESET);
     }
 
     public int parsNewId() {

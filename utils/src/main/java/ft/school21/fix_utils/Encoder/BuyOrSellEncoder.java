@@ -29,6 +29,7 @@ public class BuyOrSellEncoder extends MessageToByteEncoder<BuyOrSell> {
             byteBuf.writeInt((int) buyOrSell.getPrice());
             byteBuf.writeInt(buyOrSell.getQuantity());
             byteBuf.writeInt(buyOrSell.getChecksumLength());
+//            byteBuf.writeCharSequence(buyOrSell.getText(), StandardCharsets.UTF_8);
             byteBuf.writeCharSequence(buyOrSell.getChecksum(), StandardCharsets.UTF_8);
 
         }

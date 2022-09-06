@@ -32,11 +32,6 @@ public class AllDecoder extends ReplayingDecoder<Object> {
         } else if (protocol.getMessageType().equals(Message.BUY_MESSAGE.toString()) ||
                 protocol.getMessageType().equals(Message.SELL_MESSAGE.toString())) {
             BuyOrSell buyOrSell = new BuyOrSell();
-//            List<Integer> list1 = new ArrayList<>();
-//            list1.add(1);
-//            list1.add(2);
-//            list1.add(3);
-//            list1.add(4);
             buyOrSell.setMessageType(protocol.getMessageType());
             buyOrSell.setMessageAction(byteBuf.readCharSequence(byteBuf.readInt(), StandardCharsets.UTF_8).toString());
             buyOrSell.setId(byteBuf.readInt());
@@ -44,9 +39,9 @@ public class AllDecoder extends ReplayingDecoder<Object> {
             buyOrSell.setMarketId(byteBuf.readInt());
             buyOrSell.setPrice(byteBuf.readInt());
             buyOrSell.setQuantity(byteBuf.readInt());
+//            buyOrSell.setText(byteBuf.readCharSequence(byteBuf.readInt(), StandardCharsets.UTF_8).toString());
             buyOrSell.tagCheckSum();
             list.add(buyOrSell);
-//            list.add(list1);
         }
     }
 }

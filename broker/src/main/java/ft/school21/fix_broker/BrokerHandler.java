@@ -30,6 +30,7 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 //        super.channelActive(ctx);
         System.out.println("Broker is connecting ...");
         ConnectDone connectDone = new ConnectDone(0, 0, Message.ACCEPT_MESSAGE.toString());
+
         ctx.writeAndFlush(connectDone);
     }
 
@@ -41,16 +42,21 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
         if (protocol.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
             ConnectDone connectDone = (ConnectDone) msg;
             id = connectDone.getId();
+            String headers = "|109=" + id + "|M=Crypto|";
+            int tagTen = (headers.length() % 256);
+            String tagTenStr = String.valueOf(tagTen).length() < 3 ? "0" + String.valueOf(tagTen) : String.valueOf(tagTen);
+            System.out.println("Router -> " + FIXProtocol.ANSI_PURPLE + headers + "10=" + tagTenStr + "|" + FIXProtocol.ANSI_RESET);
             System.out.println("BROKER id = " + id);
         } else if (protocol.getMessageType().equals(Message.SELL_MESSAGE.toString()) ||
                 protocol.getMessageType().equals(Message.BUY_MESSAGE.toString())) {
             BuyOrSell buyOrSell = (BuyOrSell) msg;
             if (buyOrSell.getMessageAction().equals(ActionMessages.EXECUTE_MESSAGE.toString()) ||
                     buyOrSell.getMessageAction().equals(ActionMessages.REJECT_MESSAGE.toString())) {
-                System.out.println("Request " + buyOrSell.getMessageAction());
+
                 int i = (protocol.getMessageType().equals(Message.SELL_MESSAGE.toString())) ? 2 : 1;
                 String action = (buyOrSell.getMessageAction().equals(ActionMessages.EXECUTE_MESSAGE.toString())) ? "EXECUTED" : "REJECT";
                 transactionFix(buyOrSell, i, action);
+
                 return;
             }
         }
@@ -112,8 +118,10 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 //        } catch (InterruptedException e) {
 //            throw new RuntimeException(e);
 //        }
-        System.out.println(str);
+        System.out.print(FIXProtocol.ANSI_PURPLE);
         System.out.println(protocol);
+        System.out.print(FIXProtocol.ANSI_RESET);
+        System.out.println(str);
     }
 
     private String ChoiceSell(int numCrypt, BufferedReader bufferedReader) throws Exception {

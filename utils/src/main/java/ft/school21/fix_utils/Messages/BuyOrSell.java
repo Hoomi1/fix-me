@@ -9,6 +9,7 @@ public class BuyOrSell extends FIXProtocol{
     private int instrumentLength;
     private int quantity;
     private double price;
+//    private String text = "-";
 
     public BuyOrSell(long marketId, String messageType, int id, String messageAction,  String instrument, int quantity, double price) {
         super(marketId, messageType);
@@ -88,6 +89,14 @@ public class BuyOrSell extends FIXProtocol{
         String str = HashObjectMD5(String.valueOf(getId()));
         setChecksum(str);
     }
+
+//    public String getText() {
+//        return text;
+//    }
+//
+//    public void setText(String text) {
+//        this.text = text;
+//    }
 
     @Override
     public String toString() {
