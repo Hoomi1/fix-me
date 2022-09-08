@@ -1,5 +1,7 @@
 package ft.school21.fix_utils.Decoder;
 
+import ft.school21.fix_utils.Cryptocurr.Crypto;
+import ft.school21.fix_utils.Cryptocurr.CryptoMarket;
 import ft.school21.fix_utils.Messages.BuyOrSell;
 import ft.school21.fix_utils.Messages.ConnectDone;
 import ft.school21.fix_utils.Messages.FIXProtocol;
@@ -24,7 +26,20 @@ public class AllDecoder extends ReplayingDecoder<Object> {
         protocol.setMessageType(byteBuf.readCharSequence(byteBuf.readInt(), charset).toString());
 
         if (protocol.getMessageType().equals(Message.ACCEPT_MESSAGE.toString())) {
+
             ConnectDone connectDone = new ConnectDone();
+//            for (int i = 0; i < 10; i++) {
+////                Crypto crypto = new Crypto(byteBuf.readCharSequence(byteBuf.readInt(), charset).toString(),
+////                        byteBuf.readCharSequence(byteBuf.readInt(), charset).toString(),
+////                        byteBuf.readInt(),
+////                        byteBuf.readInt(),
+////                        byteBuf.readInt());
+//
+////                CryptoMarket.addCrypto(crypto);
+//                System.out.println(byteBuf.readCharSequence(byteBuf.readInt(), charset).toString());
+//                System.out.println(byteBuf.readCharSequence(byteBuf.readInt(), charset).toString());
+//                System.out.println(byteBuf.readInt());
+//            }
             connectDone.setMessageType(protocol.getMessageType());
             connectDone.setId(byteBuf.readInt());
             connectDone.setChecksum(byteBuf.readCharSequence(byteBuf.readInt(), charset).toString());

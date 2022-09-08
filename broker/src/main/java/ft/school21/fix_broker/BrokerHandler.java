@@ -1,6 +1,7 @@
 package ft.school21.fix_broker;
 
-import ft.school21.fix_market.Cryptocurr.CryptoMarket;
+import ft.school21.fix_utils.Cryptocurr.CryptoMarket;
+import ft.school21.fix_utils.Database.DBTransaction;
 import ft.school21.fix_utils.Messages.BuyOrSell;
 import ft.school21.fix_utils.Messages.ConnectDone;
 import ft.school21.fix_utils.Messages.FIXProtocol;
@@ -19,11 +20,6 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy-HH:mm:ss");
     Date date = new Date(System.currentTimeMillis());
     private int id;
-    private Wallet wallet;
-
-    public BrokerHandler(Wallet wallet) {
-        this.wallet = wallet;
-    }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -65,19 +61,14 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 
-        String command = null;
-
-        int ibos = 0;
-        int numCrypt = 0;
-        int choiceAm = 0;
         double choiceBS = 0;
 
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         BuyOrSell buyOrSell = null;
-        ibos = Integer.parseInt(ChoiceBuyOrSell(command, bufferedReader));
-        command = ChoiceCript(bufferedReader);
-        numCrypt = Integer.parseInt(command);
-        choiceAm = (int) Double.parseDouble(ChoiceAmount(numCrypt, bufferedReader));
+        int ibos = Integer.parseInt(ChoiceBuyOrSell(bufferedReader));
+        String command = ChoiceCript(bufferedReader);
+        int numCrypt = Integer.parseInt(command);
+        int choiceAm = (int) Double.parseDouble(ChoiceAmount(numCrypt, bufferedReader));
         if (ibos == 1)
             choiceBS = Double.parseDouble(ChoiceBuy(numCrypt, bufferedReader));
         else if (ibos == 2)
@@ -86,12 +77,12 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
         if (ibos == 1) // Buy
         {
             buyOrSell = new BuyOrSell(marketId, Message.BUY_MESSAGE.toString(), id, ActionMessages.NON.toString(),
-                    CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getCode_name().replaceAll("\t", ""),
+                    CryptoMarket.getCryptoList().get(numCrypt).getCode_name().replaceAll("\t", ""),
                     choiceAm, choiceBS);
         } else if (ibos == 2) // Sell
         {
             buyOrSell = new BuyOrSell(marketId, Message.SELL_MESSAGE.toString(), id, ActionMessages.NON.toString(),
-                    CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getCode_name().replaceAll("\t", ""),
+                    CryptoMarket.getCryptoList().get(numCrypt).getCode_name().replaceAll("\t", ""),
                     choiceAm, choiceBS);
         }
         if (buyOrSell != null)
@@ -108,32 +99,27 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
         int tagTen = (headers.length() % 256);
         String tagTenStr = String.valueOf(tagTen).length() < 3 ? "0" + String.valueOf(tagTen) : String.valueOf(tagTen);
         String protocol = "|109=" + buyOrSell.getId() + "|9=" + headers.length() + "|" + headers + "10=" + tagTenStr + "|";
-//        Transaction transaction = new Transaction("Hello");
-//        ImplementTrans implementTrans = new ImplementTrans();
-//        implementTrans.setTransaction(transaction);
-//        Thread thread = new Thread(implementTrans);
-//        thread.start();
-//        try {
-//            thread.join();
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
         System.out.print(FIXProtocol.ANSI_PURPLE);
         System.out.println(protocol);
         System.out.print(FIXProtocol.ANSI_RESET);
         System.out.println(str);
+        //TODO: доделать бонус
+//        DBTransaction dbTransaction = new DBTransaction();
+//        dbTransaction.setQuery(protocol);
+//        Thread db = new Thread(dbTransaction);
+//        db.start();
+//        dbTransaction.saveTransaction(protocol);
     }
 
     private String ChoiceSell(int numCrypt, BufferedReader bufferedReader) throws Exception {
 
-        String input = null;
         String command = null;
         while (true) {
             System.out.println("How much do you want to sell?");
             System.out.print("Enter price: ");
-            input = bufferedReader.readLine();
+            String input = bufferedReader.readLine();
             double iInp = 0;
-            double minSell = CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getMinSellPrice();
+            double minSell = CryptoMarket.getCryptoList().get(numCrypt).getMinSellPrice();
             try {
                 iInp = Double.parseDouble(input);
                 if (iInp >= minSell && iInp <= 1000) {
@@ -153,11 +139,10 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 
     private int ChoiceMarketId(BufferedReader bufferedReader) throws Exception {
 
-        String input = null;
         int marketId;
         while (true) {
             System.out.print("Enter market id: ");
-            input = bufferedReader.readLine();
+            String input = bufferedReader.readLine();
             marketId = 0;
             try {
                 marketId = Integer.parseInt(input);
@@ -172,14 +157,13 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 
     private String ChoiceBuy(int numCrypt, BufferedReader bufferedReader) throws Exception {
 
-        String input = null;
         String command = null;
         while (true) {
             System.out.println("How much do you want to buy crypto?");
             System.out.print("Enter price: ");
-            input = bufferedReader.readLine();
+            String input = bufferedReader.readLine();
             double iInp = 0;
-            double minBuy = CryptoMarket.getCryptoMarket().getCryptoList().get(numCrypt).getMinBuyPrice();
+            double minBuy = CryptoMarket.getCryptoList().get(numCrypt).getMinBuyPrice();
             try {
                 iInp = Double.parseDouble(input);
                 if (iInp >= minBuy && iInp <= 1000) {
@@ -198,16 +182,16 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private String ChoiceAmount(int numCrupt, BufferedReader bufferedReader) throws Exception {
-        String input = null;
+
         String command = null;
-        double amountCrypt = CryptoMarket.getCryptoMarket().getCryptoList().get(numCrupt).getAmountCrypt();
+        double amountCrypt = CryptoMarket.getCryptoList().get(numCrupt).getAmountCrypt();
 
         while (true) {
             System.out.println("How much cryptocurrency do you want to buy?");
             System.out.print("Enter quantity: ");
             double iInp = 0;
 
-            input = bufferedReader.readLine();
+           String input = bufferedReader.readLine();
             try {
                 iInp = Double.parseDouble(input);
                 if (iInp >= 0 && iInp <= amountCrypt) {
@@ -225,12 +209,11 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
         return command;
     }
 
-    private String ChoiceBuyOrSell(String command, BufferedReader bufferedReader) throws Exception {
+    private String ChoiceBuyOrSell(BufferedReader bufferedReader) throws Exception {
 
-        String input = null;
-
+        String command = null;
         System.out.println("Press to the enter");
-        input = bufferedReader.readLine();
+        String input = bufferedReader.readLine();
         while (true) {
             System.out.println("1) Buy" + "\n" + "2) Sell");
             input = bufferedReader.readLine();
@@ -247,14 +230,14 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
 
     private String ChoiceCript(BufferedReader bufferedReader) throws Exception {
 
-        String input = null;
         String command = null;
-
+        CryptoMarket cryptoMarket = new CryptoMarket();
         while (true) {
             int iInp = 0;
-            System.out.println(CryptoMarket.getCryptoMarket());
+            //TODO:
+            System.out.println(cryptoMarket);
             try {
-                input = bufferedReader.readLine();
+                String input = bufferedReader.readLine();
                 iInp = Integer.parseInt(input);
                 if (iInp >= 0 && iInp <= 9) {
                     command = String.valueOf(iInp);

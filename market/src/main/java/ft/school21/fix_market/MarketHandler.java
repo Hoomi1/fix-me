@@ -1,8 +1,7 @@
 package ft.school21.fix_market;
 
-import ft.school21.fix_market.Cryptocurr.Crypto;
-import ft.school21.fix_market.Cryptocurr.CryptoMarket;
-import ft.school21.fix_router.server.ServerHandler;
+import ft.school21.fix_utils.Cryptocurr.Crypto;
+import ft.school21.fix_utils.Cryptocurr.CryptoMarket;
 import ft.school21.fix_utils.Messages.BuyOrSell;
 import ft.school21.fix_utils.Messages.ConnectDone;
 import ft.school21.fix_utils.Messages.FIXProtocol;
@@ -29,12 +28,15 @@ public class MarketHandler extends ChannelInboundHandlerAdapter {
 
         System.out.println("Market is connecting ...");
 
-        List<Crypto> cryptos = CryptoMarket.getCryptoMarket().getCryptoList();
+        List<Crypto> cryptos = CryptoMarket.getCryptoList();
+        System.out.println("POINT 1");
         System.out.println("\n\t\t\t\tname " + "\t\t\tcode " + "\tamount" + "\tmin_buy " + "min_sell");
         for (int i = 0; i < cryptos.size(); i++) {
-            System.out.println("[MARKET] [INFO] " + cryptos.get(i).getName() + " " + cryptos.get(i).getCode_name() + " \t" + cryptos.get(i).getAmountCrypt() + "\t\t " +
+            System.out.println("[MARKET] [INFO] " + cryptos.get(i).getName() + (cryptos.get(i).getCode_name().equals("BNB") ? "   \t\t" : cryptos.get(i).getCode_name().equals("BUSD") ? "   " : "   \t")
+                    + "\t" + cryptos.get(i).getCode_name() + (cryptos.get(i).getCode_name().equals("MATIC") ? "   " : "   \t") + "\t" + cryptos.get(i).getAmountCrypt() + " \t" +
                     cryptos.get(i).getMinBuyPrice() + " | " + cryptos.get(i).getMinSellPrice());
         }
+        System.out.println("POINT 2");
         ConnectDone connectDone = new ConnectDone(0, 0, Message.ACCEPT_MESSAGE.toString());
         ctx.writeAndFlush(connectDone);
     }

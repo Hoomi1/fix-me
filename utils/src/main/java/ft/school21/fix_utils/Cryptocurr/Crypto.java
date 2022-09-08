@@ -1,4 +1,4 @@
-package ft.school21.fix_market.Cryptocurr;
+package ft.school21.fix_utils.Cryptocurr;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -10,13 +10,19 @@ public class Crypto {
     private double minBuyPrice;
     private double minSellPrice;
 
-    public Crypto(String name, String code_name) {
+    public Crypto(String name, String code_name, int amountCrypt, double minBuyPrice, double minSellPrice) {
 
         this.name = name;
         this.code_name = code_name;
-        this.amountCrypt = ThreadLocalRandom.current().nextInt(0, 1000);
-        this.minBuyPrice = ThreadLocalRandom.current().nextInt(0, 1000);
-        this.minSellPrice = ThreadLocalRandom.current().nextInt(0, 1000);
+        this.amountCrypt = amountCrypt;
+        this.minBuyPrice = minBuyPrice;
+        this.minSellPrice = minSellPrice;
+//        this.amountCrypt = ThreadLocalRandom.current().nextInt(0, 1000);
+//        this.minBuyPrice = ThreadLocalRandom.current().nextInt(0, 1000);
+//        this.minSellPrice = ThreadLocalRandom.current().nextInt(0, 1000);
+    }
+
+    public Crypto() {
     }
 
     public String getName() {
