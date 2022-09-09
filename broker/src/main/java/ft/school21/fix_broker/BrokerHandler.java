@@ -18,7 +18,8 @@ import java.util.Date;
 public class BrokerHandler extends ChannelInboundHandlerAdapter {
 
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy-HH:mm:ss");
-    Date date = new Date(System.currentTimeMillis());
+    private Date date = new Date(System.currentTimeMillis());
+    private static DBTransaction dbTransaction = new DBTransaction();
     private int id;
 
     @Override
@@ -103,12 +104,10 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
         System.out.println(protocol);
         System.out.print(FIXProtocol.ANSI_RESET);
         System.out.println(str);
-        //TODO: доделать бонус
-//        DBTransaction dbTransaction = new DBTransaction();
-//        dbTransaction.setQuery(protocol);
-//        Thread db = new Thread(dbTransaction);
-//        db.start();
-//        dbTransaction.saveTransaction(protocol);
+        String trans = "|" + buyOrSell.getId() +
+                "|Crypto|" + buyOrSell.getInstrument() + "|" + buyOrSell.getQuantity() + "|" +
+                buyOrSell.getPrice() + ((i == 1) ? "|BUY|" : "|SELL|") + action + "|";
+        dbTransaction.saveTransaction(trans);
     }
 
     private String ChoiceSell(int numCrypt, BufferedReader bufferedReader) throws Exception {

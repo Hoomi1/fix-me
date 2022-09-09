@@ -45,24 +45,9 @@ public class DBTransaction implements Runnable{
             String query = "INSERT INTO fix_me(transaction) VALUES (" + "'"+ str + "');";
             Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement();
-            boolean res = statement.execute(query);
-            System.out.println(res);
-//            ResultSet resultSet = statement.executeQuery("INSERT INTO fix_me(transaction) VALUES (" + "'"+ str + "');");
-//            resultSet.next();
-
-//            for (int i = 0; i < 10; i++) {
-//                Crypto crypto = new Crypto(resultSet.getString("namet"),
-//                        resultSet.getString("code"),
-//                        Integer.parseInt(resultSet.getString("amount")),
-//                        Integer.parseInt(resultSet.getString("min_buy")),
-//                        Integer.parseInt(resultSet.getString("min_sell")));
-//                CryptoMarket.addCrypto(crypto);
-//
-//                resultSet.next();
-//            }
-//            resultSet.close();
-//            statement.close();
-//            connection.close();
+            statement.execute(query);
+            statement.close();
+            connection.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

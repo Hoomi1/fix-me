@@ -3,9 +3,9 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.38">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <IntrospectionStateNumber>1047</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1029</IntrospectionStateNumber>
       <ServerVersion>14.2</ServerVersion>
-      <StartupTime>1662628751</StartupTime>
+      <StartupTime>1662712986</StartupTime>
       <TimeZones>true ACDT
 true ACSST
 false ACST
@@ -804,10 +804,10 @@ false Zulu
 13655||10|C|G
 13655||-9223372036854775808|U|G
 13655||10|U|G</Grants>
-      <IntrospectionStateNumber>1048</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1030</IntrospectionStateNumber>
       <ObjectId>16386</ObjectId>
       <Relations>sequence|table|16408|16409|1
-sequence|table|16470|16471|1
+sequence|table|16466|16467|1
 </Relations>
       <OwnerName>cyuuki</OwnerName>
     </database>
@@ -4240,7 +4240,7 @@ sequence|table|16470|16471|1
     <schema id="264" parent="3" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>1048</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1030</IntrospectionStateNumber>
       <ObjectId>2200</ObjectId>
       <StateNumber>526</StateNumber>
       <OwnerName>postgres</OwnerName>
@@ -4253,13 +4253,13 @@ sequence|table|16470|16471|1
     </sequence>
     <sequence id="266" parent="264" name="transactions_id_seq">
       <DataType>integer|0s</DataType>
-      <ObjectId>16470</ObjectId>
-      <StateNumber>1034</StateNumber>
+      <ObjectId>16466</ObjectId>
+      <StateNumber>1016</StateNumber>
       <OwnerName>cyuuki</OwnerName>
     </sequence>
     <table id="267" parent="264" name="fix_me">
-      <ObjectId>16479</ObjectId>
-      <StateNumber>1035</StateNumber>
+      <ObjectId>16475</ObjectId>
+      <StateNumber>1017</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>cyuuki</OwnerName>
     </table>
@@ -4270,15 +4270,15 @@ sequence|table|16470|16471|1
       <OwnerName>cyuuki</OwnerName>
     </table>
     <table id="269" parent="264" name="transactions">
-      <ObjectId>16471</ObjectId>
-      <StateNumber>1034</StateNumber>
+      <ObjectId>16467</ObjectId>
+      <StateNumber>1016</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>cyuuki</OwnerName>
     </table>
     <column id="270" parent="267" name="transaction">
       <DataType>varchar(1000)|0s</DataType>
       <Position>1</Position>
-      <StateNumber>1035</StateNumber>
+      <StateNumber>1017</StateNumber>
       <TypeId>1043</TypeId>
     </column>
     <column id="271" parent="268" name="id">
@@ -4380,60 +4380,60 @@ sequence|table|16470|16471|1
       <DefaultExpression>nextval(&apos;transactions_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>1034</StateNumber>
+      <StateNumber>1016</StateNumber>
       <TypeId>23</TypeId>
     </column>
     <column id="286" parent="269" name="namet">
       <DataType>varchar(1000)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>1034</StateNumber>
+      <StateNumber>1016</StateNumber>
       <TypeId>1043</TypeId>
     </column>
     <column id="287" parent="269" name="code">
       <DataType>varchar(1000)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>1034</StateNumber>
+      <StateNumber>1016</StateNumber>
       <TypeId>1043</TypeId>
     </column>
     <column id="288" parent="269" name="amount">
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>1034</StateNumber>
+      <StateNumber>1016</StateNumber>
       <TypeId>20</TypeId>
     </column>
     <column id="289" parent="269" name="min_buy">
       <DataType>double precision|0s</DataType>
       <NotNull>1</NotNull>
       <Position>5</Position>
-      <StateNumber>1034</StateNumber>
+      <StateNumber>1016</StateNumber>
       <TypeId>701</TypeId>
     </column>
     <column id="290" parent="269" name="min_sell">
       <DataType>double precision|0s</DataType>
       <NotNull>1</NotNull>
       <Position>6</Position>
-      <StateNumber>1034</StateNumber>
+      <StateNumber>1016</StateNumber>
       <TypeId>701</TypeId>
     </column>
     <index id="291" parent="269" name="transactions_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>16477</ObjectId>
+      <ObjectId>16473</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1034</StateNumber>
+      <StateNumber>1016</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
     <key id="292" parent="269" name="transactions_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>16478</ObjectId>
+      <ObjectId>16474</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>1034</StateNumber>
-      <UnderlyingIndexId>16477</UnderlyingIndexId>
+      <StateNumber>1016</StateNumber>
+      <UnderlyingIndexId>16473</UnderlyingIndexId>
     </key>
   </database-model>
 </dataSource>
