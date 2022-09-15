@@ -12,7 +12,7 @@ framework.
 ### ___Run:___
 * *Build project*
 ```
-mvn clean install
+mvn clean package
 ```
 * *Build router* 
 ```
