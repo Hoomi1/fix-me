@@ -193,7 +193,7 @@ public class BrokerHandler extends ChannelInboundHandlerAdapter {
            String input = bufferedReader.readLine();
             try {
                 iInp = Double.parseDouble(input);
-                if (iInp >= 0 && iInp <= amountCrypt) {
+                if (iInp >= 1 && iInp <= amountCrypt) {
                     command = String.valueOf(iInp);
                     break;
                 } else {

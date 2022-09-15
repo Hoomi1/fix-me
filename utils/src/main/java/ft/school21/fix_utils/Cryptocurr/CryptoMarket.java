@@ -41,7 +41,7 @@ public class CryptoMarket {
     @Override
     public String toString() {
         for (int i = 0; i < cryptoList.size(); ++i) {
-            System.out.println(i + ") " + cryptoList.get(i).getName() + (!cryptoList.get(i).getCode_name().equals("BUSD") ? "\t\t" : "\t") + cryptoList.get(i).getCode_name());
+            System.out.println(i + ") " + cryptoList.get(i).getName() + (cryptoList.get(i).getCode_name().equals("BNB") ? "\t\t" : "\t") + cryptoList.get(i).getCode_name());
         }
         return "";
     }

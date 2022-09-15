@@ -30,9 +30,9 @@ public class MarketHandler extends ChannelInboundHandlerAdapter {
 
         List<Crypto> cryptos = CryptoMarket.getCryptoList();
         System.out.println("POINT 1");
-        System.out.println("\n\t\t\t\tname " + "\t\t\tcode " + "\tamount" + "\tmin_buy " + "min_sell");
+        System.out.println("\n\t\tname " + "\t\t\tcode " + "\t\tamount" + "\tmin_buy " + "min_sell");
         for (int i = 0; i < cryptos.size(); i++) {
-            System.out.println("[MARKET] [INFO] " + cryptos.get(i).getName() + (cryptos.get(i).getCode_name().equals("BNB") ? "   \t\t" : cryptos.get(i).getCode_name().equals("BUSD") ? "   " : "   \t")
+            System.out.println("[MARKET] [INFO] " + cryptos.get(i).getName() + (cryptos.get(i).getCode_name().equals("BNB") ? "   \t\t" : "   \t")
                     + "\t" + cryptos.get(i).getCode_name() + (cryptos.get(i).getCode_name().equals("MATIC") ? "   " : "   \t") + "\t" + cryptos.get(i).getAmountCrypt() + " \t" +
                     cryptos.get(i).getMinBuyPrice() + " | " + cryptos.get(i).getMinSellPrice());
         }
